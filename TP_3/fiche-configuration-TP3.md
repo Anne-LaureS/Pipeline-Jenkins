@@ -73,5 +73,7 @@ où `ENVIRONMENT` serait injecté autrement (ex: trigger externe, job amont).
 
 ## Livrables restants à joindre manuellement
 
-- [ ] Capture d'écran du job `tp3-pipeline-parametre` (vue d'ensemble avec build #1 FAILURE et #2 SUCCESS)
-- [ ] Capture d'écran de la page de paramètres ("Build with Parameters")
+- [x] Capture d'écran du job `tp3-pipeline-parametre` (vue d'ensemble avec build #1 FAILURE et #2 SUCCESS)
+![alt text](image.png)
+- [x] Capture d'écran de la page de paramètres ("Build with Parameters")
+![alt text](image-1.png)
