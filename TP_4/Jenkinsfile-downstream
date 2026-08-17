@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'ENVIRONMENT', defaultValue: 'dev', description: 'Environnement transmis par le job amont')
+        string(name: 'CHANGE_REFERENCE', defaultValue: '', description: 'Ticket transmis par le job amont')
+    }
+
+    stages {
+        stage('Traitement aval') {
+            steps {
+                echo "Job aval déclenché pour l'environnement ${params.ENVIRONMENT} (ticket ${params.CHANGE_REFERENCE})."
+                echo "Aucun secret reçu en paramètre — seul le contexte métier est transmis."
+            }
+        }
+    }
+}

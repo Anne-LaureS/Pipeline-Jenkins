@@ -1,0 +1,58 @@
+pipeline {
+    agent none
+
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+    }
+
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Environnement cible')
+        string(name: 'CHANGE_REFERENCE', defaultValue: 'CHG-0000', description: 'Identifiant du ticket / demande de changement')
+    }
+
+    stages {
+        stage('Vérification dépendances agent aws-lab') {
+            agent { label 'aws-lab' }
+            steps {
+                sh '''
+                    echo "=== Node: $(hostname) ==="
+                    java -version
+                    git --version
+                    aws --version
+                    python3 --version
+                    ansible --version
+                '''
+            }
+        }
+
+        stage('Stages AWS (restreints à aws-lab)') {
+            agent { label 'aws-lab' }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        export AWS_DEFAULT_REGION=eu-west-3
+                        echo "=== Identite AWS utilisee depuis l'agent aws-lab ==="
+                        aws sts get-caller-identity
+                    '''
+                }
+            }
+        }
+
+        stage('Déclenchement du job aval') {
+            agent any
+            steps {
+                echo "Transmission du contexte au job aval (aucun secret) : ENVIRONMENT=${params.ENVIRONMENT}, CHANGE_REFERENCE=${params.CHANGE_REFERENCE}"
+                build job: 'tp4-job-aval', parameters: [
+                    string(name: 'ENVIRONMENT', value: params.ENVIRONMENT),
+                    string(name: 'CHANGE_REFERENCE', value: params.CHANGE_REFERENCE)
+                ]
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Build ${env.BUILD_NUMBER} terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}

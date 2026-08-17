@@ -1,0 +1,4 @@
+*.pem
+.aws/
+controller-to-agent-key
+controller-to-agent-key.pub
