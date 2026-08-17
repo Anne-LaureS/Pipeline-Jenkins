@@ -70,5 +70,7 @@ Build 1 termine avec le statut : SUCCESS
 
 ## Livrables restants à joindre manuellement
 
-- [ ] Capture d'écran du job `aws-identity-check` dans Jenkins (page du build #1, statut SUCCESS)
-- [ ] Capture d'écran de la page Credentials (`Manage Jenkins > Credentials`) montrant `aws-jenkins-lab` sans révéler le secret
+- [x] Capture d'écran du job `aws-identity-check` dans Jenkins (page du build #1, statut SUCCESS)
+![alt text](image.png)
+- [x] Capture d'écran de la page Credentials (`Manage Jenkins > Credentials`) montrant `aws-jenkins-lab` sans révéler le secret
+![alt text](image-1.png)
