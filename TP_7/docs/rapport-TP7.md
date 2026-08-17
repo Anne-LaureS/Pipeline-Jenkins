@@ -103,7 +103,7 @@ puis build rejoué avec succès.
 - Un Jenkinsfile par job (lisibilité), plutôt qu'un unique pipeline monolithique.
 - Playbook et inventaire versionnés et réutilisables indépendamment des jobs.
 
-## 7. Points pour la soutenance (10 min)
+## 7. Soutenance
 
 1. Démonstration live : `tp7-inventaire` → `tp7-deploiement` (`prod`, avec approbation) → `tp7-nettoyage`.
 2. Explication du choix architectural : réutilisation de l'agent `aws-lab` et du VPC `Training=true` du labo.
