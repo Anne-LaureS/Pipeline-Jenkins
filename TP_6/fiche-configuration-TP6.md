@@ -66,5 +66,7 @@ Security Group sg-090caccbed5fdbc58 supprimé.
 
 ## Livrables restants à joindre manuellement
 
-- [ ] Capture d'écran du build `tp6-aws-network` (toutes les stages en vert)
-- [ ] Capture d'écran de l'artefact `sg-verification.json` archivé
+- [x] Capture d'écran du build `tp6-aws-network` (toutes les stages en vert)
+![alt text](image.png)
+- [x] Capture d'écran de l'artefact `sg-verification.json` archivé
+![alt text](image-1.png)
