@@ -1,0 +1,124 @@
+pipeline {
+    agent { label 'aws-lab' }
+
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '15'))
+    }
+
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Environnement cible')
+        string(name: 'CHANGE_REFERENCE', defaultValue: '', description: 'Identifiant du ticket / demande de changement (obligatoire)')
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = 'eu-west-3'
+        SG_NAME = "training-sg-tp7-${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Validation des paramètres') {
+            steps {
+                script {
+                    if (!params.CHANGE_REFERENCE?.trim()) {
+                        error('CHANGE_REFERENCE est obligatoire pour tout déploiement.')
+                    }
+                }
+                echo "Déploiement demandé : ENVIRONMENT=${params.ENVIRONMENT} | CHANGE_REFERENCE=${params.CHANGE_REFERENCE}"
+            }
+        }
+
+        stage('Lint du playbook') {
+            steps {
+                sh '/home/jenkins-agent/.local/bin/ansible-lint playbooks/site.yml | tee ansible-lint-output.txt'
+            }
+        }
+
+        stage('Vérification Ansible (--check --diff)') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible-web-lab', keyFileVariable: 'ANSIBLE_KEY')]) {
+                    sh '''
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory/hosts.ini playbooks/site.yml --check --diff --private-key="$ANSIBLE_KEY" | tee ansible-check-output.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Approbation manuelle (environnement sensible)') {
+            when {
+                expression { params.ENVIRONMENT != 'dev' }
+            }
+            steps {
+                input message: "Confirmer le déploiement (SG + playbook) sur '${params.ENVIRONMENT}' pour ${params.CHANGE_REFERENCE} ?", ok: 'Déployer'
+            }
+        }
+
+        stage('Création ressource AWS (Security Group taggé)') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    script {
+                        env.VPC_ID = sh(
+                            script: 'aws ec2 describe-vpcs --filters "Name=tag:Training,Values=true" --query "Vpcs[0].VpcId" --output text',
+                            returnStdout: true
+                        ).trim()
+                        env.SG_ID = sh(
+                            script: '''
+                                aws ec2 create-security-group \
+                                    --group-name "$SG_NAME" \
+                                    --description "TP7 - deploiement controle - $CHANGE_REFERENCE" \
+                                    --vpc-id "$VPC_ID" \
+                                    --query GroupId --output text
+                            ''',
+                            returnStdout: true
+                        ).trim()
+                    }
+                    sh '''
+                        aws ec2 create-tags --resources "$SG_ID" --tags \
+                            Key=Owner,Value=al \
+                            Key=Course,Value=TP-Jenkins-AWS \
+                            Key=Environment,Value="$ENVIRONMENT" \
+                            Key=ExpiryDate,Value=2026-08-25 \
+                            Key=ChangeReference,Value="$CHANGE_REFERENCE"
+                        echo "Security Group cree et tague : $SG_ID"
+                    '''
+                }
+            }
+        }
+
+        stage('Configuration interne (Ansible - exécution réelle)') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible-web-lab', keyFileVariable: 'ANSIBLE_KEY')]) {
+                    sh '''
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory/hosts.ini playbooks/site.yml --private-key="$ANSIBLE_KEY" | tee ansible-apply-output.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Enregistrement pour rollback') {
+            steps {
+                sh '''
+                    cat > deployed-resources.json <<EOF
+{
+  "build_number": "$BUILD_NUMBER",
+  "environment": "$ENVIRONMENT",
+  "change_reference": "$CHANGE_REFERENCE",
+  "security_group_id": "$SG_ID",
+  "vpc_id": "$VPC_ID",
+  "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "rollback_command": "aws ec2 delete-security-group --group-id $SG_ID"
+}
+EOF
+                    cat deployed-resources.json
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'ansible-lint-output.txt, ansible-check-output.txt, ansible-apply-output.txt, deployed-resources.json', fingerprint: true, allowEmptyArchive: true
+            echo "Déploiement ${env.BUILD_NUMBER} (${params.ENVIRONMENT}) terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}

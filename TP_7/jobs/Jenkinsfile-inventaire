@@ -1,0 +1,54 @@
+pipeline {
+    agent { label 'aws-lab' }
+
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '15'))
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = 'eu-west-3'
+    }
+
+    stages {
+        stage('Identité et contexte') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh 'aws sts get-caller-identity | tee identity.json'
+                }
+            }
+        }
+
+        stage('Inventaire EC2') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        aws ec2 describe-instances \
+                            --query "Reservations[].Instances[].{Id:InstanceId,State:State.Name,Type:InstanceType,Tags:Tags}" \
+                            --output json | tee ec2-inventory.json
+                    '''
+                }
+            }
+        }
+
+        stage('Inventaire Security Groups (tag Course)') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        aws ec2 describe-security-groups \
+                            --filters "Name=tag:Course,Values=TP-Jenkins-AWS" \
+                            --query "SecurityGroups[].{Id:GroupId,Name:GroupName,VpcId:VpcId,Tags:Tags}" \
+                            --output json | tee sg-inventory.json
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'identity.json, ec2-inventory.json, sg-inventory.json', fingerprint: true
+            echo "Inventaire ${env.BUILD_NUMBER} terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}

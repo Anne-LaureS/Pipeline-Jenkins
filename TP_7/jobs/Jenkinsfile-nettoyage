@@ -1,0 +1,59 @@
+pipeline {
+    agent { label 'aws-lab' }
+
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '15'))
+    }
+
+    parameters {
+        string(name: 'SG_ID', defaultValue: '', description: 'ID du Security Group à supprimer (voir deployed-resources.json du job de déploiement correspondant)')
+        string(name: 'CHANGE_REFERENCE', defaultValue: '', description: 'Ticket associé au nettoyage (traçabilité)')
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = 'eu-west-3'
+    }
+
+    stages {
+        stage('Validation des paramètres') {
+            steps {
+                script {
+                    if (!params.SG_ID?.trim() || !(params.SG_ID ==~ /^sg-[0-9a-f]+$/)) {
+                        error("SG_ID invalide ou manquant : '${params.SG_ID}'. Format attendu : sg-xxxxxxxx (voir l'artefact deployed-resources.json du job de déploiement).")
+                    }
+                }
+            }
+        }
+
+        stage('Vérification avant suppression') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        echo "Ressource ciblee pour suppression (ticket $CHANGE_REFERENCE) :"
+                        aws ec2 describe-security-groups --group-ids "$SG_ID" --output json | tee sg-before-deletion.json
+                    '''
+                }
+            }
+        }
+
+        stage('Suppression') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        echo "Commande executee : aws ec2 delete-security-group --group-id $SG_ID"
+                        aws ec2 delete-security-group --group-id "$SG_ID"
+                        echo "Security Group $SG_ID supprime (ticket $CHANGE_REFERENCE)."
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'sg-before-deletion.json', fingerprint: true, allowEmptyArchive: true
+            echo "Nettoyage ${env.BUILD_NUMBER} (SG=${params.SG_ID}) terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}
