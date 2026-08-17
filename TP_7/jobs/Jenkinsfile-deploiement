@@ -30,7 +30,7 @@ pipeline {
 
         stage('Lint du playbook') {
             steps {
-                sh '/home/jenkins-agent/.local/bin/ansible-lint playbooks/site.yml | tee ansible-lint-output.txt'
+                sh '/home/jenkins-agent/.local/bin/ansible-lint TP_7/playbooks/site.yml | tee ansible-lint-output.txt'
             }
         }
 
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible-web-lab', keyFileVariable: 'ANSIBLE_KEY')]) {
                     sh '''
-                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory/hosts.ini playbooks/site.yml --check --diff --private-key="$ANSIBLE_KEY" | tee ansible-check-output.txt
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i TP_7/inventory/hosts.ini TP_7/playbooks/site.yml --check --diff --private-key="$ANSIBLE_KEY" | tee ansible-check-output.txt
                     '''
                 }
             }
@@ -89,7 +89,7 @@ pipeline {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible-web-lab', keyFileVariable: 'ANSIBLE_KEY')]) {
                     sh '''
-                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory/hosts.ini playbooks/site.yml --private-key="$ANSIBLE_KEY" | tee ansible-apply-output.txt
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i TP_7/inventory/hosts.ini TP_7/playbooks/site.yml --private-key="$ANSIBLE_KEY" | tee ansible-apply-output.txt
                     '''
                 }
             }
