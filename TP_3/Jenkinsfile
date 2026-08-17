@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Environnement cible')
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Version de l\'artefact à traiter')
+        booleanParam(name: 'DRY_RUN', defaultValue: true, description: 'Mode simulation (aucune action réelle)')
+        string(name: 'CHANGE_REFERENCE', defaultValue: '', description: 'Identifiant du ticket / demande de changement')
+    }
+
+    stages {
+        stage('Préparation') {
+            steps {
+                script {
+                    env.SHORT_COMMIT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    currentBuild.displayName = "#${env.BUILD_NUMBER} - ${env.SHORT_COMMIT}"
+                }
+                sh 'mkdir -p artifacts'
+                sh '''
+                    printf 'build=%s\ncommit=%s\n' "$BUILD_NUMBER" "$SHORT_COMMIT" > artifacts/build-info.txt
+                '''
+                archiveArtifacts artifacts: 'artifacts/build-info.txt', fingerprint: true
+            }
+        }
+
+        stage('Validation') {
+            steps {
+                script {
+                    def allowedEnvironments = ['dev', 'test', 'prod']
+                    if (!allowedEnvironments.contains(params.ENVIRONMENT)) {
+                        error("Environnement non autorisé : ${params.ENVIRONMENT}. Valeurs acceptées : ${allowedEnvironments}")
+                    }
+                    if (!params.CHANGE_REFERENCE?.trim()) {
+                        error('CHANGE_REFERENCE est obligatoire (identifiant de ticket / demande de changement).')
+                    }
+                }
+                echo "Contexte validé : ENVIRONMENT=${params.ENVIRONMENT} | VERSION=${params.VERSION} | DRY_RUN=${params.DRY_RUN} | CHANGE_REFERENCE=${params.CHANGE_REFERENCE}"
+            }
+        }
+
+        stage('Exécution') {
+            steps {
+                script {
+                    if (params.DRY_RUN) {
+                        echo "[DRY_RUN] Simulation du déploiement de la version ${params.VERSION} sur ${params.ENVIRONMENT} (aucune action réelle)."
+                    } else {
+                        echo "Déploiement réel de la version ${params.VERSION} sur ${params.ENVIRONMENT}."
+                        sh "echo 'deployed ${params.VERSION} to ${params.ENVIRONMENT}' > artifacts/deploy-result.txt"
+                    }
+                }
+            }
+        }
+
+        stage('Post-traitement') {
+            steps {
+                echo "Fin du traitement pour le changement ${params.CHANGE_REFERENCE} (environnement ${params.ENVIRONMENT})."
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Build ${env.BUILD_NUMBER} terminé avec le statut : ${currentBuild.currentResult}"
+        }
+        failure {
+            echo "Échec du build ${env.BUILD_NUMBER} — vérifier les paramètres ou les logs ci-dessus."
+        }
+    }
+}
