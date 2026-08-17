@@ -1,4 +1,4 @@
-# 🚀 Pipeline Jenkins — TP Amazon AWS : CI/CD et automatisation avec Ansible et Jenkins
+# ☁️ Pipeline Jenkins — TP Amazon AWS : CI/CD et automatisation avec Ansible et Jenkins
 
 <p align="center">
 
