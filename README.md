@@ -4,6 +4,7 @@
 
 ![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-4B0082?style=for-the-badge)
 
@@ -61,16 +62,17 @@ Développeur
 
 ## 🛠️ Technologies
 
-| Technologie   | Utilisation                               |
-| ------------- | ----------------------------------------- |
-| **Jenkins**   | Orchestration du pipeline CI/CD           |
-| **GitHub**    | Gestion du code source                    |
-| **Git**       | Gestion de versions                       |
-| **Docker**    | Conteneurisation                          |
-| **SonarQube** | Analyse de qualité et de sécurité du code |
-| **Trivy**     | Analyse des vulnérabilités                |
-| **OWASP**     | Contrôles de sécurité applicative         |
-| **Terraform** | Infrastructure as Code                    |
+| Technologie   | Utilisation                                 |
+| ------------- | ------------------------------------------- |
+| **Jenkins**   | Orchestration du pipeline CI/CD             |
+| **GitHub**    | Gestion du code source                      |
+| **Ansible**   | Automatisation, configuration & déploiement |
+| **Git**       | Gestion de versions                         |
+| **Docker**    | Conteneurisation                            |
+| **SonarQube** | Analyse de qualité et de sécurité du code   |
+| **Trivy**     | Analyse des vulnérabilités                  |
+| **OWASP**     | Contrôles de sécurité applicative           |
+| **Terraform** | Infrastructure as Code                      |
 
 > Les outils seront intégrés progressivement au fur et à mesure de l'évolution du pipeline.
 
@@ -253,6 +255,8 @@ Chaque modification poussée sur la branche configurée pourra ainsi déclencher
 
 ## 🗺️ Roadmap
 
+## 🗺️ Roadmap
+
 * [ ] Création du Jenkinsfile
 * [ ] Connexion GitHub → Jenkins
 * [ ] Configuration du Webhook
@@ -268,6 +272,10 @@ Chaque modification poussée sur la branche configurée pourra ainsi déclencher
 * [ ] Scan de l'image Docker
 * [ ] Validation Terraform
 * [ ] Scan de sécurité IaC
+* [ ] Intégration Ansible
+* [ ] Création des playbooks Ansible
+* [ ] Gestion de la configuration
+* [ ] Automatisation du déploiement
 * [ ] Quality Gate
 * [ ] Déploiement automatisé
 * [ ] Notifications
@@ -306,13 +314,16 @@ Chaque modification poussée sur la branche configurée pourra ainsi déclencher
                                  │
                                  ▼
                          ┌───────────────┐
-                         │   Registry    │
+                         │    Ansible    │
                          └───────┬───────┘
+                                 │
+                         Automatisation &
+                          Configuration
                                  │
                                  ▼
                          ┌───────────────┐
                          │  Déploiement  │
-                         └───────────────┘
+                         └───────────────┘                                            
 ```
 
 ---
