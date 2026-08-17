@@ -1,0 +1,111 @@
+pipeline {
+    agent { label 'aws-lab' }
+
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = 'eu-west-3'
+        SG_NAME = "training-sg-tp6-${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Sélection région et contexte') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        echo "Region : $AWS_DEFAULT_REGION"
+                        aws sts get-caller-identity
+                    '''
+                }
+            }
+        }
+
+        stage('Identification du VPC de labo') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    script {
+                        env.VPC_ID = sh(
+                            script: '''
+                                aws ec2 describe-vpcs --filters "Name=tag:Training,Values=true" --query "Vpcs[0].VpcId" --output text
+                            ''',
+                            returnStdout: true
+                        ).trim()
+                    }
+                    sh 'echo "VPC de labo identifié : $VPC_ID"'
+                }
+            }
+        }
+
+        stage('Création du Security Group de test') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    script {
+                        env.SG_ID = sh(
+                            script: '''
+                                aws ec2 create-security-group \
+                                    --group-name "$SG_NAME" \
+                                    --description "TP6 - Jenkins AWS - ressource de test ephemere" \
+                                    --vpc-id "$VPC_ID" \
+                                    --query GroupId --output text
+                            ''',
+                            returnStdout: true
+                        ).trim()
+                    }
+                    sh '''
+                        aws ec2 create-tags --resources "$SG_ID" --tags \
+                            Key=Owner,Value=al \
+                            Key=Course,Value=TP-Jenkins-AWS \
+                            Key=Environment,Value=lab \
+                            Key=ExpiryDate,Value=2026-08-18
+                        echo "Security Group cree : $SG_ID"
+                    '''
+                }
+            }
+        }
+
+        stage('Règle entrante restreinte') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        MY_IP="$(curl -s https://checkip.amazonaws.com)/32"
+                        echo "Autorisation du port 8443 uniquement depuis $MY_IP (pas de 0.0.0.0/0)"
+                        aws ec2 authorize-security-group-ingress \
+                            --group-id "$SG_ID" \
+                            --protocol tcp --port 8443 --cidr "$MY_IP"
+                    '''
+                }
+            }
+        }
+
+        stage('Vérification et archivage') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        aws ec2 describe-security-groups --group-ids "$SG_ID" --output json | tee sg-verification.json
+                    '''
+                }
+                archiveArtifacts artifacts: 'sg-verification.json', fingerprint: true
+            }
+        }
+
+        stage('Nettoyage (suppression de la ressource de test)') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        echo "Commande de suppression : aws ec2 delete-security-group --group-id $SG_ID"
+                        aws ec2 delete-security-group --group-id "$SG_ID"
+                        echo "Security Group $SG_ID supprimé."
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Build ${env.BUILD_NUMBER} terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}
