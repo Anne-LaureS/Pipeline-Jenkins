@@ -15,7 +15,7 @@
 | Élément | Valeur |
 |---|---|
 | URL | http://13.36.171.149:8080 |
-| Administrateur nominatif | login `Admin-al` (nom complet : Anne-Laure) |
+| Administrateur nominatif | login `anne-laure` (nom affiché : Admin-al) |
 | Java | OpenJDK 21 |
 | Version Jenkins | 2.568.2 (LTS) |
 
