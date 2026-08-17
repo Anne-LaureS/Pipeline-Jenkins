@@ -3,8 +3,8 @@
 # deploy-jenkins-ec2.sh
 # TP Jenkins sur AWS — provisionne une instance EC2 Ubuntu 24.04 et installe Jenkins.
 #
-# Prérequis (à faire une seule fois, en local, dans VS Code) :
-#   1. Rendre ce script exécutable : chmod +x deploy-jenkins-ec2.sh
+# Prérequis :
+#   1. Rendre le script exécutable : chmod +x deploy-jenkins-ec2.sh
 #   2. Lancer : ./deploy-jenkins-ec2.sh
 #
 # Le script est idempotent-friendly : il réutilise la clé et le security group
@@ -14,7 +14,7 @@ set -euo pipefail
 # ---------- Paramètres à adapter ----------
 PROFILE="jenkins-lab"          # profil AWS CLI configuré via `aws configure --profile jenkins-lab`
 REGION="eu-west-3"             # Paris
-PREFIX="al"                    # tes initiales — change ici si besoin
+PREFIX="al"                    # mes initiales
 INSTANCE_NAME="${PREFIX}-jenkins-tp"
 KEY_NAME="${PREFIX}-jenkins-key"
 SG_NAME="${PREFIX}-jenkins-sg"
@@ -41,8 +41,8 @@ echo "    AMI trouvée : ${AMI_ID}"
  
 echo "==> Création (ou réutilisation) de la paire de clés SSH : ${KEY_NAME}"
 if $AWS ec2 describe-key-pairs --key-names "${KEY_NAME}" >/dev/null 2>&1; then
-  echo "    La clé ${KEY_NAME} existe déjà côté AWS — je ne la recrée pas."
-  echo "    Assure-toi d'avoir le fichier ${KEY_NAME}.pem correspondant en local."
+  echo "    La clé ${KEY_NAME} existe déjà côté AWS."
+  echo "    S'assurer d'avoir le fichier ${KEY_NAME}.pem correspondant en local."
 else
   $AWS ec2 create-key-pair \
     --key-name "${KEY_NAME}" \
@@ -83,7 +83,7 @@ EXISTING=$($AWS ec2 describe-instances \
   --query "Reservations[].Instances[].InstanceId" --output text)
  
 if [ -n "${EXISTING}" ]; then
-  echo "    Une instance ${INSTANCE_NAME} tourne déjà (${EXISTING}) — je ne relance pas."
+  echo "    Une instance ${INSTANCE_NAME} tourne déjà (${EXISTING}) — Ne pas relancer."
   INSTANCE_ID="${EXISTING}"
 else
   INSTANCE_ID=$($AWS ec2 run-instances \
@@ -111,7 +111,7 @@ echo "   Instance ID : ${INSTANCE_ID}"
 echo "   IP publique : ${PUBLIC_IP}"
 echo ""
 echo " Jenkins s'installe automatiquement via le script user-data (cloud-init)."
-echo " Patiente 2-3 minutes puis :"
+echo " Patienter 2-3 minutes puis :"
 echo ""
 echo "   Se connecter en SSH :"
 echo "     ssh -i ${KEY_NAME}.pem ubuntu@${PUBLIC_IP}"

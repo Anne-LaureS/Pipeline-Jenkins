@@ -102,4 +102,3 @@ puis build rejoué avec succès.
 - Nommage cohérent avec les TP précédents (`tp7-*`, mêmes conventions de tags, mêmes credentials réutilisés).
 - Un Jenkinsfile par job (lisibilité), plutôt qu'un unique pipeline monolithique.
 - Playbook et inventaire versionnés et réutilisables indépendamment des jobs.
-

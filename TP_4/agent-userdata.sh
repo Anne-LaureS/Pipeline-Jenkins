@@ -2,7 +2,7 @@
 #
 # agent-userdata.sh
 # Exécuté par cloud-init au premier démarrage de l'agent Jenkins EC2.
-# Installe les dépendances (Java, Git, AWS CLI v2, Python, Ansible) et crée
+# Installer les dépendances (Java, Git, AWS CLI v2, Python, Ansible) et crée
 # un compte d'exécution dédié "jenkins-agent" pour la connexion SSH depuis le contrôleur.
 
 set -euxo pipefail

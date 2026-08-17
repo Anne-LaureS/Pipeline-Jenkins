@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # deploy-jenkins-agent-ec2.sh
-# TP4 - provisionne une instance EC2 dédiée à servir d'agent Jenkins (label aws-lab).
+# TP4 - provisionner une instance EC2 dédiée à servir d'agent Jenkins (label aws-lab).
 
 set -euo pipefail
 

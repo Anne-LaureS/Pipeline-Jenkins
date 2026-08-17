@@ -2,7 +2,7 @@
 #
 # jenkins-userdata.sh
 # Exécuté automatiquement par cloud-init au premier démarrage de l'instance EC2.
-# Installe Java 21 et Jenkins (dépôt LTS officiel) sur Ubuntu 24.04.
+# Installer Java 21 et Jenkins (dépôt LTS officiel) sur Ubuntu 24.04.
 # Logs visibles ensuite avec : sudo cat /var/log/cloud-init-output.log
  
 set -euxo pipefail
@@ -42,5 +42,5 @@ systemctl status jenkins --no-pager || true
  
 echo "=== Jenkins install terminée ==="
 echo "Mot de passe initial admin :"
-cat /var/lib/jenkins/secrets/initialAdminPassword || echo "(pas encore généré, patiente quelques secondes)"
+cat /var/lib/jenkins/secrets/initialAdminPassword || echo "(pas encore généré, patienter quelques secondes)"
  
