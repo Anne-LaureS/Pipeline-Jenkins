@@ -5,7 +5,9 @@
 ![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-844FBA?style=for-the-badge&logo=terraform&logoColor=white)
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-4B0082?style=for-the-badge)
 
 </p>
@@ -62,19 +64,80 @@ Développeur
 
 ## 🛠️ Technologies
 
-| Technologie   | Utilisation                                 |
-| ------------- | ------------------------------------------- |
-| **Jenkins**   | Orchestration du pipeline CI/CD             |
-| **GitHub**    | Gestion du code source                      |
-| **Ansible**   | Automatisation, configuration & déploiement |
-| **Git**       | Gestion de versions                         |
-| **Docker**    | Conteneurisation                            |
-| **SonarQube** | Analyse de qualité et de sécurité du code   |
-| **Trivy**     | Analyse des vulnérabilités                  |
-| **OWASP**     | Contrôles de sécurité applicative           |
-| **Terraform** | Infrastructure as Code                      |
+| Technologie   | Utilisation                                  |
+| ------------- | -------------------------------------------- |
+| **Jenkins**   | Orchestration du pipeline CI/CD              |
+| **GitHub**    | Gestion du code source                       |
+| **Git**       | Gestion de versions                          |
+| **AWS**       | Infrastructure et services Cloud             |
+| **Terraform** | Infrastructure as Code                       |
+| **Ansible**   | Automatisation, configuration et déploiement |
+| **Docker**    | Conteneurisation                             |
+| **SonarQube** | Analyse de qualité et de sécurité du code    |
+| **Trivy**     | Analyse des vulnérabilités                   |
+| **OWASP**     | Contrôles de sécurité applicative            |
 
 > Les outils seront intégrés progressivement au fur et à mesure de l'évolution du pipeline.
+
+---
+
+## 🏗️ Architecture
+
+```text
+                         ┌───────────────┐
+                         │  Développeur  │
+                         └───────┬───────┘
+                                 │
+                              Git Push
+                                 │
+                                 ▼
+                         ┌───────────────┐
+                         │    GitHub     │
+                         └───────┬───────┘
+                                 │
+                              Webhook
+                                 │
+                                 ▼
+                         ┌───────────────┐
+                         │    Jenkins    │
+                         └───────┬───────┘
+                                 │
+              ┌──────────────────┼──────────────────┐
+              │                  │                  │
+              ▼                  ▼                  ▼
+           Build &            Security          Quality
+            Tests              Scans              Gate
+              │                  │                  │
+              └──────────────────┼──────────────────┘
+                                 │
+                                 ▼
+                         ┌───────────────┐
+                         │   Terraform   │
+                         │      IaC      │
+                         └───────┬───────┘
+                                 │
+                         Provisionnement
+                                 │
+                                 ▼
+                    ┌────────────────────────┐
+                    │          AWS           │
+                    │                        │
+                    │  Infrastructure Cloud  │
+                    └───────────┬────────────┘
+                                │
+                                ▼
+                         ┌───────────────┐
+                         │    Ansible    │
+                         │               │
+                         │ Configuration │
+                         │   Hardening   │
+                         └───────┬───────┘
+                                 │
+                                 ▼
+                         ┌───────────────┐
+                         │  Application  │
+                         └───────────────┘
+```
 
 ---
 
@@ -177,6 +240,11 @@ La sécurité est intégrée directement dans le pipeline afin de détecter les 
 ├── tests/
 ├── docker/
 ├── terraform/
+├── ansible/
+│   ├── inventory/
+│   ├── playbooks/
+│   ├── roles/
+│   └── group_vars/
 └── scripts/
 ```
 
@@ -255,8 +323,6 @@ Chaque modification poussée sur la branche configurée pourra ainsi déclencher
 
 ## 🗺️ Roadmap
 
-## 🗺️ Roadmap
-
 * [ ] Création du Jenkinsfile
 * [ ] Connexion GitHub → Jenkins
 * [ ] Configuration du Webhook
@@ -280,51 +346,6 @@ Chaque modification poussée sur la branche configurée pourra ainsi déclencher
 * [ ] Déploiement automatisé
 * [ ] Notifications
 * [ ] Monitoring du pipeline
-
----
-
-## 🏗️ Architecture cible
-
-```text
-                         ┌───────────────┐
-                         │  Développeur  │
-                         └───────┬───────┘
-                                 │
-                                 ▼
-                         ┌───────────────┐
-                         │    GitHub     │
-                         └───────┬───────┘
-                                 │
-                              Webhook
-                                 │
-                                 ▼
-                         ┌───────────────┐
-                         │    Jenkins    │
-                         └───────┬───────┘
-                                 │
-                ┌────────────────┼────────────────┐
-                │                │                │
-                ▼                ▼                ▼
-             Build           Security          Quality
-             & Tests          Scans             Gate
-                │                │                │
-                └────────────────┼────────────────┘
-                                 │
-                              Validation
-                                 │
-                                 ▼
-                         ┌───────────────┐
-                         │    Ansible    │
-                         └───────┬───────┘
-                                 │
-                         Automatisation &
-                          Configuration
-                                 │
-                                 ▼
-                         ┌───────────────┐
-                         │  Déploiement  │
-                         └───────────────┘                                            
-```
 
 ---
 
@@ -355,7 +376,7 @@ Le pipeline est actuellement en phase de construction et sera enrichi progressiv
 
 <p align="center">
 
-**Jenkins • GitHub • CI/CD • DevSecOps • Security**
+**Jenkins • GitHub • AWS • Terraform • Ansible • Docker • DevSecOps**
 
 </p>
 ```
