@@ -1,6 +1,6 @@
 # Fiche de configuration — TP1 : Déployer un serveur Jenkins
 
-## Infrastructure
+## 🖥️ Infrastructure
 
 | Élément | Valeur |
 |---|---|
@@ -10,7 +10,7 @@
 | Security group | `al-jenkins-sg` — SSH(22) et 8080 restreints à l'IP du poste de travail |
 | Clé SSH | `al-jenkins-key.pem` |
 
-## Accès Jenkins
+## 🔑 Accès Jenkins
 
 | Élément | Valeur |
 |---|---|
@@ -19,7 +19,7 @@
 | Java | OpenJDK 21 |
 | Version Jenkins | 2.568.2 (LTS) |
 
-## Statut du service
+## 🟢 Statut du service
 
 ```
 ● jenkins.service - Jenkins Continuous Integration Server
@@ -28,7 +28,7 @@
    Main PID: 11157 (java)
 ```
 
-## Plugins essentiels installés (jeu "suggested plugins")
+## 🧩 Plugins essentiels installés (jeu "suggested plugins")
 
 92 plugins installés au total. Les plugins essentiels pour la suite du parcours CI/CD :
 
@@ -41,7 +41,7 @@
 
 *(Liste complète des 92 plugins disponible sur demande — extraite de `/var/lib/jenkins/plugins/` sur l'instance.)*
 
-## Livrables restants à joindre manuellement
+## 📸 Livrables restants à joindre manuellement
 
 - [x] Capture d'écran de `sudo systemctl status jenkins` (texte ci-dessus, à capturer depuis votre terminal SSH)
 ![alt text](image-2.png)

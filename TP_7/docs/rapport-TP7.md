@@ -1,6 +1,6 @@
 # Rapport de mise en œuvre — TP7 : Projet global Jenkins et Ansible
 
-## 1. Architecture
+## 🏗️ 1. Architecture
 
 ```
 Développeur (Anne-Laure)
@@ -36,7 +36,7 @@ TP_7/
     └── rapport-TP7.md
 ```
 
-## 2. Le catalogue de jobs
+## 📚 2. Le catalogue de jobs
 
 | Job | Rôle | Paramètres | Ressources touchées |
 |---|---|---|---|
@@ -44,7 +44,7 @@ TP_7/
 | `tp7-deploiement` | Lint + `--check --diff` + approbation conditionnelle + création d'un Security Group taggé + configuration Ansible réelle + enregistrement d'un artefact de rollback | `ENVIRONMENT`, `CHANGE_REFERENCE` | Crée 1 Security Group, applique le playbook sur `web_lab` |
 | `tp7-nettoyage` | Supprime une ressource créée par `tp7-deploiement`, à partir de son ID | `SG_ID`, `CHANGE_REFERENCE` | Supprime 1 Security Group |
 
-## 3. Sécurité
+## 🔐 3. Sécurité
 
 - **Rôles IAM dédiés par fonction — limitation rencontrée et traitement** : le compte AWS de labo (type
   Academy) interdit toute gestion IAM en self-service (`iam:CreateUser`, `iam:CreateRole` refusés —
@@ -66,7 +66,7 @@ TP_7/
   notre configuration, mais à signaler : dans un contexte réel, une politique IAM scoperait les
   `Describe*` par tag `Owner`.
 
-## 4. Automatisation
+## ⚙️ 4. Automatisation
 
 - **Playbook idempotent** (`playbooks/site.yml`) : validé par double exécution réelle consécutive
   (`changed=1` puis `changed=0`, cf. TP5) et testé en mode `--check --diff` avant toute exécution réelle
@@ -81,7 +81,7 @@ TP_7/
   utiliser. `tp7-nettoyage` consomme cet ID en paramètre — l'opérateur retrouve la commande de rollback
   directement dans l'historique des builds, sans avoir à deviner quoi que ce soit.
 
-## 5. Preuves d'exécution (résumé)
+## ✅ 5. Preuves d'exécution (résumé)
 
 | Test | Résultat |
 |---|---|
@@ -97,15 +97,9 @@ Ansible (`playbook not found`) — chemins relatifs erronés dans le Jenkinsfile
 après le checkout SCM du dépôt complet). Corrigé en un commit, ressource orpheline nettoyée manuellement,
 puis build rejoué avec succès.
 
-## 6. Qualité
+## ✨ 6. Qualité
 
 - Nommage cohérent avec les TP précédents (`tp7-*`, mêmes conventions de tags, mêmes credentials réutilisés).
 - Un Jenkinsfile par job (lisibilité), plutôt qu'un unique pipeline monolithique.
 - Playbook et inventaire versionnés et réutilisables indépendamment des jobs.
 
-## 7. Soutenance
-
-1. Démonstration live : `tp7-inventaire` → `tp7-deploiement` (`prod`, avec approbation) → `tp7-nettoyage`.
-2. Explication du choix architectural : réutilisation de l'agent `aws-lab` et du VPC `Training=true` du labo.
-3. Discussion de la limitation IAM et de la mesure compensatoire retenue.
-4. Démonstration du mécanisme de rollback via `deployed-resources.json`.

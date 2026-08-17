@@ -1,6 +1,6 @@
 # Fiche de configuration — TP3 : Jobs de base et paramétrés
 
-## Choix d'implémentation
+## 🧠 Choix d'implémentation
 
 Les parties A (job de base), B (job paramétré) et C (Jenkinsfile) du cahier ont été regroupées en un
 **unique Jenkinsfile déclaratif versionné** (`TP_3/Jenkinsfile`), car la partie C reprend et enrichit
@@ -8,7 +8,7 @@ les exigences de A et B — c'est ce livrable final qui est évalué. Le job Jen
 **"Pipeline script from SCM"**, pointant sur ce fichier dans le dépôt GitHub : le pipeline est donc
 lui-même versionné (objectif 4.1).
 
-## Job créé
+## ⚙️ Job créé
 
 | Élément | Valeur |
 |---|---|
@@ -17,7 +17,7 @@ lui-même versionné (objectif 4.1).
 | Repo source | `https://github.com/Anne-LaureS/Pipeline-Jenkins.git` (branche `main`) |
 | Script path | `TP_3/Jenkinsfile` |
 
-## Paramètres
+## 🎛️ Paramètres
 
 | Paramètre | Type | Détail |
 |---|---|---|
@@ -26,7 +26,7 @@ lui-même versionné (objectif 4.1).
 | `DRY_RUN` | boolean | `true` par défaut (simulation) |
 | `CHANGE_REFERENCE` | string | obligatoire, validé en stage Validation |
 
-## Stages du Jenkinsfile
+## 🪜 Stages du Jenkinsfile
 
 1. **Préparation** — `git rev-parse --short HEAD`, nom de build explicite (`#N - hash`), génération et archivage de `artifacts/build-info.txt`.
 2. **Validation** — rejette tout `ENVIRONMENT` hors `dev/test/prod`, exige `CHANGE_REFERENCE` non vide, affiche le contexte choisi (aucun secret).
@@ -35,7 +35,7 @@ lui-même versionné (objectif 4.1).
 
 Options globales : `timeout(10 min)`, `buildDiscarder(numToKeepStr: '10')`, section `post` (always/failure).
 
-## Preuves d'exécution
+## ✅ Preuves d'exécution
 
 ### Build #1 — `CHANGE_REFERENCE` vide → **FAILURE** (attendu)
 
@@ -63,7 +63,7 @@ Rejetée **avant même la création du build** — Jenkins renvoie une erreur HT
 empêche déjà toute valeur hors liste, et la validation explicite du stage **Validation** couvrirait le cas
 où `ENVIRONMENT` serait injecté autrement (ex: trigger externe, job amont).
 
-## Critères de réussite couverts
+## 📋 Critères de réussite couverts
 
 - [x] Nom de build explicite incluant numéro de build + hash court du commit.
 - [x] Artefact `build-info.txt` généré et archivé.
@@ -71,7 +71,7 @@ où `ENVIRONMENT` serait injecté autrement (ex: trigger externe, job amont).
 - [x] Contexte affiché sans secret.
 - [x] Jenkinsfile déclaratif avec 4 stages, `timeout`, section `post`, rétention limitée des builds.
 
-## Livrables restants à joindre manuellement
+## 📸 Livrables restants à joindre manuellement
 
 - [x] Capture d'écran du job `tp3-pipeline-parametre` (vue d'ensemble avec build #1 FAILURE et #2 SUCCESS)
 ![alt text](image.png)

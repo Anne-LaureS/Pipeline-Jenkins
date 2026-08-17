@@ -1,6 +1,6 @@
 # Fiche de configuration — TP5 : Imposer une configuration avec Ansible
 
-## Architecture retenue
+## 🏗️ Architecture retenue
 
 | Rôle | Machine |
 |---|---|
@@ -8,7 +8,7 @@
 | Cible `web_lab` | Contrôleur Jenkins du TP1 (13.36.171.149) — réutilisé plutôt que de créer une 3e instance |
 | Compte de connexion | `automation` (créé spécifiquement sur le contrôleur, clé SSH dédiée, sudo NOPASSWD) |
 
-## Incident rencontré et diagnostic
+## 🚨 Incident rencontré et diagnostic
 
 Lors du premier test manuel du playbook, l'instance contrôleur (t3.micro, 1 Go de RAM, **sans swap
 configuré**) a cessé de répondre (SSH timeout dès l'échange de bannière) pendant qu'une tâche
@@ -22,7 +22,7 @@ configuré**) a cessé de répondre (SSH timeout dès l'échange de bannière) p
 - **Amélioration possible (non appliquée, hors périmètre du TP)** : ajouter un fichier swap sur les
   instances t3.micro du labo pour éviter ce type de blocage.
 
-## Partie A — Inventaire et connectivité
+## 📡 Partie A — Inventaire et connectivité
 
 ```ini
 [web_lab]
@@ -34,7 +34,7 @@ $ ansible -i inventory.ini web_lab -m ping
 web01 | SUCCESS => { "changed": false, "ping": "pong" }
 ```
 
-## Partie B — Playbook (idempotent)
+## 📦 Partie B — Playbook (idempotent)
 
 `playbook.yml` installe `curl`, crée `/etc/training/` et y dépose un fichier de preuve.
 
@@ -45,7 +45,7 @@ web01 | SUCCESS => { "changed": false, "ping": "pong" }
 | 1ère (`ansible-playbook playbook.yml`) | `changed=2` (création réelle) |
 | 2ème (même commande, sans modification entre-temps) | `changed=0` (rien à faire, conforme) |
 
-## Partie C — Exécution via Jenkins
+## ⚙️ Partie C — Exécution via Jenkins
 
 Job `tp5-ansible-web-lab` (Pipeline SCM, `TP_5/Jenkinsfile`), exécuté sur l'agent `aws-lab` :
 
@@ -56,7 +56,7 @@ Job `tp5-ansible-web-lab` (Pipeline SCM, `TP_5/Jenkinsfile`), exécuté sur l'ag
    archivée (`ansible-apply-output.txt`)
 5. **Inventaire archivé** (`TP_5/inventory.ini`) à chaque build
 
-### Test #1 — `ENVIRONMENT=dev`
+### 🧪 Test #1 — `ENVIRONMENT=dev`
 
 Approbation **non déclenchée** (stage skip) :
 ```
@@ -65,7 +65,7 @@ Stage "Approbation manuelle (environnement sensible)" skipped due to when condit
 Build 1 (environnement dev) terminé avec le statut : SUCCESS
 ```
 
-### Test #2 — `ENVIRONMENT=prod`
+### 🧪 Test #2 — `ENVIRONMENT=prod`
 
 Approbation **déclenchée**, build mis en pause :
 ```
@@ -79,7 +79,7 @@ Après validation manuelle :
 Build 2 (environnement prod) terminé avec le statut : SUCCESS
 ```
 
-## Critères de réussite
+## 📋 Critères de réussite
 
 - [x] Playbook idempotent (`changed=0` au second passage réel).
 - [x] `ansible-lint` exécuté et archivé.
@@ -88,7 +88,7 @@ Build 2 (environnement prod) terminé avec le statut : SUCCESS
 - [x] Fichier d'inventaire archivé à chaque build.
 - [x] Aucune clé SSH en clair dans les logs Jenkins (credential masqué, transmis via fichier temporaire).
 
-## Livrables restants à joindre manuellement
+## 📸 Livrables restants à joindre manuellement
 
 - [x] Capture d'écran du build #2 en pause sur l'étape d'approbation (bouton "Exécuter"/"Abort")
 ![alt text](image-2.png)

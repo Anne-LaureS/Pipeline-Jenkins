@@ -1,6 +1,6 @@
 # Fiche de configuration — TP6 : AWS CLI et gestion réseau
 
-## Job créé
+## ⚙️ Job créé
 
 | Élément | Valeur |
 |---|---|
@@ -9,7 +9,7 @@
 | Agent | `aws-lab` |
 | Credential AWS | `aws-jenkins-lab` (même identité read-scoped que TP2/TP4) |
 
-## VPC de labo utilisé
+## 🌐 VPC de labo utilisé
 
 Identifié dynamiquement via le tag fourni par la plateforme (pas de valeur codée en dur) :
 
@@ -20,7 +20,7 @@ aws ec2 describe-vpcs --filters "Name=tag:Training,Values=true" --query "Vpcs[0]
 
 Ce VPC est distinct du VPC par défaut où tournent les instances Jenkins (contrôleur + agent) des TP précédents.
 
-## Étapes du pipeline
+## 🪜 Étapes du pipeline
 
 1. **Sélection région et contexte** — `AWS_DEFAULT_REGION=eu-west-3`, identité tracée (`sts get-caller-identity`).
 2. **Identification du VPC** — récupération dynamique du VPC taggé `Training=true`.
@@ -29,7 +29,7 @@ Ce VPC est distinct du VPC par défaut où tournent les instances Jenkins (contr
 5. **Vérification et archivage** — `describe-security-groups --output json` archivé comme artefact (`sg-verification.json`).
 6. **Nettoyage** — suppression du Security Group en fin de pipeline, commande documentée dans les logs avant exécution.
 
-## Preuve : règle non ouverte au monde
+## 🔒 Preuve : règle non ouverte au monde
 
 ```
 Autorisation du port 8443 uniquement depuis 35.180.87.8/32 (pas de 0.0.0.0/0)
@@ -38,7 +38,7 @@ Autorisation du port 8443 uniquement depuis 35.180.87.8/32 (pas de 0.0.0.0/0)
 
 Seule la règle d'*egress* par défaut d'AWS reste à `0.0.0.0/0` (comportement standard non modifiable pour un SG neuf, sans rapport avec le critère qui porte sur l'*ingress*).
 
-## Preuve : tags obligatoires appliqués
+## 🏷️ Preuve : tags obligatoires appliqués
 
 ```json
 "Tags": [
@@ -49,7 +49,7 @@ Seule la règle d'*egress* par défaut d'AWS reste à `0.0.0.0/0` (comportement 
 ]
 ```
 
-## Preuve : suppression effective
+## 🧹 Preuve : suppression effective
 
 ```
 Commande de suppression : aws ec2 delete-security-group --group-id sg-090caccbed5fdbc58
@@ -57,14 +57,14 @@ Commande de suppression : aws ec2 delete-security-group --group-id sg-090caccbed
 Security Group sg-090caccbed5fdbc58 supprimé.
 ```
 
-## Critères de réussite (section 7.3 du cahier)
+## 📋 Critères de réussite (section 7.3 du cahier)
 
 - [x] Aucune règle entrante ouverte à `0.0.0.0/0`.
 - [x] Tags `Owner`, `Course`, `Environment`, `ExpiryDate` appliqués au Security Group.
 - [x] Commande de suppression documentée et exécutée (automatiquement en fin de pipeline).
 - [x] Sortie de vérification (JSON) archivée comme artefact Jenkins.
 
-## Livrables restants à joindre manuellement
+## 📸 Livrables restants à joindre manuellement
 
 - [x] Capture d'écran du build `tp6-aws-network` (toutes les stages en vert)
 ![alt text](image.png)

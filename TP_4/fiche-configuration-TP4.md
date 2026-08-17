@@ -1,6 +1,6 @@
 # Fiche de configuration — TP4 : Nœuds Jenkins et jobs interopérés
 
-## Infrastructure
+## 🖥️ Infrastructure
 
 | Élément | Valeur |
 |---|---|
@@ -10,7 +10,7 @@
 | Compte d'exécution dédié | `jenkins-agent` (créé spécifiquement, pas le compte `ubuntu` par défaut) |
 | Connexion Jenkins | SSH, clé dédiée `ssh-jenkins-agent-tp4` (credential Jenkins, clé privée jamais commitée) |
 
-## Nœud Jenkins
+## 🤖 Nœud Jenkins
 
 | Élément | Valeur |
 |---|---|
@@ -19,7 +19,7 @@
 | Répertoire distant | `/home/jenkins-agent/agent-work` |
 | Stratégie de rétention | Always (relance automatique par SSH) |
 
-## Dépendances vérifiées sur l'agent
+## 🧰 Dépendances vérifiées sur l'agent
 
 ```
 java -version    → OpenJDK 21.0.11
@@ -29,14 +29,14 @@ python3 --version → Python 3.12.3
 ansible --version → ansible [core 2.16.3]
 ```
 
-## Jobs créés
+## ⚙️ Jobs créés
 
 | Job | Type | Rôle |
 |---|---|---|
 | `tp4-pipeline-agent` | Pipeline (SCM, `TP_4/Jenkinsfile`) | Job amont : vérifie les dépendances sur `aws-lab`, exécute les stages AWS restreints à ce label, déclenche le job aval |
 | `tp4-job-aval` | Pipeline (SCM, `TP_4/Jenkinsfile-downstream`) | Job aval : reçoit uniquement `ENVIRONMENT` et `CHANGE_REFERENCE`, aucun secret |
 
-## Preuve : stages AWS exécutés uniquement sur `aws-lab`
+## ✅ Preuve : stages AWS exécutés uniquement sur `aws-lab`
 
 ```
 [Pipeline] { (Vérification dépendances agent aws-lab)
@@ -51,7 +51,7 @@ aws sts get-caller-identity
 { "Arn": "arn:aws:iam::622333992348:user/jenkins-lab-al" }
 ```
 
-## Preuve : job aval reçoit uniquement le contexte (pas de secret)
+## 🔒 Preuve : job aval reçoit uniquement le contexte (pas de secret)
 
 ```
 Transmission du contexte au job aval (aucun secret) : ENVIRONMENT=prod, CHANGE_REFERENCE=CHG-TP4-001
@@ -63,7 +63,7 @@ Build tp4-job-aval #3 completed: SUCCESS
 Le `Jenkinsfile-downstream` ne déclare que deux paramètres (`ENVIRONMENT`, `CHANGE_REFERENCE`) — aucune
 variable de credential AWS n'est transmise au job aval.
 
-## Preuve : comportement à l'arrêt de l'agent (test attendu 5.3)
+## ⚠️ Preuve : comportement à l'arrêt de l'agent (test attendu 5.3)
 
 Deux tentatives ont été nécessaires pour bien isoler ce test :
 
@@ -87,13 +87,13 @@ Deux tentatives ont été nécessaires pour bien isoler ce test :
    manuellement puis l'agent remis en ligne ; un build de contrôle (#5) a confirmé le retour à la normale
    (`SUCCESS`).
 
-## Critères de réussite (section 5.3 du cahier)
+## 📋 Critères de réussite (section 5.3 du cahier)
 
 - [x] Un build s'exécute sur l'agent étiqueté (`Running on aws-lab-agent`, builds #1, #2, #3, #5).
 - [x] L'arrêt de l'agent produit un échec/blocage compréhensible et non une exécution sur un nœud non prévu (`'aws-lab-agent' is offline`, build resté en file, rien exécuté sur le contrôleur).
 - [x] Le job aval reçoit le contexte (environnement + ticket) sans recevoir de secret en paramètre.
 
-## Livrables restants à joindre manuellement
+## 📸 Livrables restants à joindre manuellement
 
 - [x] Capture d'écran de la page `Manage Jenkins > Nodes` montrant `aws-lab-agent` en ligne avec le label `aws-lab`
 ![alt text](image.png)
