@@ -95,6 +95,10 @@ Deux tentatives ont été nécessaires pour bien isoler ce test :
 
 ## Livrables restants à joindre manuellement
 
-- [ ] Capture d'écran de la page `Manage Jenkins > Nodes` montrant `aws-lab-agent` en ligne avec le label `aws-lab`
-- [ ] Capture d'écran du build `tp4-pipeline-agent` montrant `Running on aws-lab-agent`
-- [ ] Capture d'écran de la file d'attente bloquée (`'aws-lab-agent' is offline`) pendant le test d'arrêt
+- [x] Capture d'écran de la page `Manage Jenkins > Nodes` montrant `aws-lab-agent` en ligne avec le label `aws-lab`
+![alt text](image.png)
+- [x] Capture d'écran du build `tp4-pipeline-agent` montrant `Running on aws-lab-agent`
+![alt text](image-1.png)
+- [x] Capture d'écran de la file d'attente bloquée (`'aws-lab-agent' is offline`) pendant le test d'arrêt
+![alt text](image-2.png)
+![alt text](image-3.png)
