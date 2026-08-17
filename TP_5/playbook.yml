@@ -1,0 +1,24 @@
+---
+- name: Baseline de laboratoire TP5
+  hosts: web_lab
+  become: true
+  tasks:
+    - name: Installer curl
+      ansible.builtin.package:
+        name: curl
+        state: present
+
+    - name: Créer le répertoire de preuve
+      ansible.builtin.file:
+        path: /etc/training
+        state: directory
+        mode: '0755'
+
+    - name: Déposer le fichier de preuve
+      ansible.builtin.copy:
+        dest: /etc/training/provisioned.txt
+        content: |
+          Configuré par Ansible (TP5)
+          Playbook: playbook.yml
+          Groupe: web_lab
+        mode: '0644'

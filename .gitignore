@@ -2,3 +2,5 @@
 .aws/
 controller-to-agent-key
 controller-to-agent-key.pub
+ansible-automation-key
+ansible-automation-key.pub

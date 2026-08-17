@@ -1,0 +1,64 @@
+pipeline {
+    agent { label 'aws-lab' }
+
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+    }
+
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'test', 'prod'], description: 'Environnement cible')
+    }
+
+    environment {
+        ANSIBLE_HOST_KEY_CHECKING = 'False'
+        ANSIBLE_LINT = '/home/jenkins-agent/.local/bin/ansible-lint'
+    }
+
+    stages {
+        stage('Lint') {
+            steps {
+                sh '''
+                    ${ANSIBLE_LINT} TP_5/playbook.yml | tee ansible-lint-output.txt
+                '''
+                archiveArtifacts artifacts: 'ansible-lint-output.txt, TP_5/inventory.ini', fingerprint: true
+            }
+        }
+
+        stage('Vérification (--check --diff)') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible-web-lab', keyFileVariable: 'ANSIBLE_KEY')]) {
+                    sh '''
+                        ansible-playbook -i TP_5/inventory.ini TP_5/playbook.yml --check --diff --private-key="$ANSIBLE_KEY" | tee ansible-check-output.txt
+                    '''
+                }
+                archiveArtifacts artifacts: 'ansible-check-output.txt', fingerprint: true
+            }
+        }
+
+        stage('Approbation manuelle (environnement sensible)') {
+            when {
+                expression { params.ENVIRONMENT != 'dev' }
+            }
+            steps {
+                input message: "Confirmer l'exécution réelle du playbook sur l'environnement '${params.ENVIRONMENT}' ?", ok: 'Exécuter'
+            }
+        }
+
+        stage('Exécution réelle') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible-web-lab', keyFileVariable: 'ANSIBLE_KEY')]) {
+                    sh '''
+                        ansible-playbook -i TP_5/inventory.ini TP_5/playbook.yml --private-key="$ANSIBLE_KEY" | tee ansible-apply-output.txt
+                    '''
+                }
+                archiveArtifacts artifacts: 'ansible-apply-output.txt', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Build ${env.BUILD_NUMBER} (environnement ${params.ENVIRONMENT}) terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}
