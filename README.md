@@ -21,6 +21,17 @@ code, sa fiche de configuration (preuves d'exécution + captures) et, pour le TP
 
 ☁️ Les deux tournent sur le compte AWS de labo partagé (fourni par le formateur, IAM restreint), région `eu-west-3`.
 
+⚠️ **Pas d'Elastic IP** : après un arrêt/redémarrage (stop/start) de l'instance `al-jenkins-tp`, l'IP
+publique change. Mettre à jour `TP_4/deploy-jenkins-agent-ec2.sh`, `TP_5/inventory.ini` et
+`TP_7/inventory/hosts.ini` en une commande :
+
+```bash
+./update-ip.sh <NOUVELLE_IP>
+```
+
+Penser aussi à mettre à jour manuellement la règle de Security Group de l'agent (SSH entrant depuis
+l'IP du contrôleur) — non gérée par ce script.
+
 ## 📋 Sommaire des TP
 
 | TP | Contenu | Fiche |
