@@ -90,7 +90,7 @@ Build 2 (environnement prod) terminé avec le statut : SUCCESS
 
 ## 📸 Livrables restants à joindre manuellement
 
-- [x] Capture d'écran du build #2 en pause sur l'étape d'approbation (bouton "Exécuter"/"Abort")
+- [x] Capture d'écran du build #2 en pause sur l'étape d'approbation 
 ![alt text](image-2.png)
 ![alt text](image-1.png)
 - [x] Capture d'écran des artefacts archivés du job (lint + check + apply + inventaire)

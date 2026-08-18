@@ -43,7 +43,7 @@
 
 ## 📸 Livrables restants à joindre manuellement
 
-- [x] Capture d'écran de `sudo systemctl status jenkins` (texte ci-dessus, à capturer depuis votre terminal SSH)
+- [x] Capture d'écran de `sudo systemctl status jenkins` 
 ![alt text](image-2.png)
-- [x] Capture d'écran de l'écran d'accueil Jenkins (dashboard après le setup wizard, une fois connecté avec `Anne-Laure`)
+- [x] Capture d'écran de l'écran d'accueil Jenkins 
 ![alt text](image-1.png)
