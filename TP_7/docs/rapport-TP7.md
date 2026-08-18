@@ -46,8 +46,8 @@ TP_7/
 
 ## 🔐 3. Sécurité
 
-- **Rôles IAM dédiés par fonction — limitation rencontrée et traitement** : le compte AWS de labo (type
-  Academy) interdit toute gestion IAM en self-service (`iam:CreateUser`, `iam:CreateRole` refusés —
+- **Rôles IAM dédiés par fonction — limitation rencontrée et traitement** : le compte AWS de labo (fourni
+  par le formateur, pas AWS Academy) interdit toute gestion IAM en self-service (`iam:CreateUser`, `iam:CreateRole` refusés —
   incident déjà rencontré et documenté au TP2). Il n'a donc pas été possible de créer une identité AWS
   distincte par job. **Mesure compensatoire** : séparation de la responsabilité au niveau Jenkins plutôt
   qu'IAM — chaque job ne demande que le credential dont il a besoin (`aws-jenkins-lab` pour les appels AWS

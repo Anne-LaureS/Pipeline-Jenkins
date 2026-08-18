@@ -2,7 +2,7 @@
 
 ## ⚠️ Contexte / incident rencontré
 
-Le compte AWS du laboratoire est un compte restreint (type AWS Academy) : l'utilisateur `jenkins-lab-al`
+Le compte AWS du laboratoire est un compte restreint fourni par le formateur (pas AWS Academy) : l'utilisateur `jenkins-lab-al`
 n'a **aucun droit IAM en self-service** (`iam:CreateUser`, `iam:GetUser`, etc. tous refusés — `AccessDenied`).
 Il n'a pas été possible de créer un nouvel utilisateur IAM dédié et strictement scopé pour Jenkins.
 

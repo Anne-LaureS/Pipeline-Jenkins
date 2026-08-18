@@ -19,7 +19,7 @@ code, sa fiche de configuration (preuves d'exécution + captures) et, pour le TP
 | 🎛️ Contrôleur Jenkins | `al-jenkins-tp` (13.36.171.149) | Provisionné au TP1, sert aussi de cible Ansible `web_lab` (TP5/TP7) |
 | 🤖 Agent Jenkins | `al-jenkins-agent-tp4` (label `aws-lab`) | Provisionné au TP4 — Git, Java, AWS CLI, Python, Ansible |
 
-☁️ Les deux tournent sur le compte AWS de labo partagé (type Academy), région `eu-west-3`.
+☁️ Les deux tournent sur le compte AWS de labo partagé (fourni par le formateur, IAM restreint), région `eu-west-3`.
 
 ## 📋 Sommaire des TP
 
