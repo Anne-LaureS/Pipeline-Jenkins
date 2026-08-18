@@ -9,8 +9,7 @@
 
 </p>
 
-📘 Dépôt du cahier de travaux pratiques **Amazon AWS — CI/CD et automatisation avec Ansible et Jenkins**
-(Mastère Cybersécurité, 4ème année). Chaque dossier `TP_n/` correspond à un TP du cahier et contient son
+📘 Dépôt du cahier de travaux pratiques **Amazon AWS — CI/CD et automatisation avec Ansible et Jenkins**. Chaque dossier `TP_n/` correspond à un TP du cahier et contient son
 code, sa fiche de configuration (preuves d'exécution + captures) et, pour le TP7, un rapport de synthèse.
 
 ## 🖥️ Infrastructure du labo
