@@ -50,4 +50,14 @@ $AWS ec2 authorize-security-group-ingress \
   || echo "    (règle déjà présente)"
 
 echo ""
-echo "==> Terminé : fichiers + Security Group de l'agent (${AGENT_SG_ID}) à jour."
+echo "==> Commit et push des fichiers mis à jour (nécessaire : les jobs Jenkins lisent le repo via checkout SCM)"
+git add TP_4/deploy-jenkins-agent-ec2.sh TP_5/inventory.ini TP_7/inventory/hosts.ini
+if git diff --cached --quiet; then
+  echo "    (rien à committer, fichiers déjà à jour)"
+else
+  git commit -m "Mise à jour IP web_lab (${OLD_IP} -> ${NEW_IP})"
+  git push origin main
+fi
+
+echo ""
+echo "==> Terminé : fichiers + Security Group de l'agent (${AGENT_SG_ID}) à jour, poussé sur GitHub."
