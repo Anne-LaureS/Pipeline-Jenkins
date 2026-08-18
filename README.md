@@ -29,8 +29,8 @@ publique change. Mettre à jour `TP_4/deploy-jenkins-agent-ec2.sh`, `TP_5/invent
 ./update-ip.sh <NOUVELLE_IP>
 ```
 
-Penser aussi à mettre à jour manuellement la règle de Security Group de l'agent (SSH entrant depuis
-l'IP du contrôleur) — non gérée par ce script.
+Le script met aussi à jour en direct la règle SSH du Security Group de l'agent (autorisant l'IP du
+contrôleur) via l'AWS CLI.
 
 ## 📋 Sommaire des TP
 
