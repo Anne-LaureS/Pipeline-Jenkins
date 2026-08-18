@@ -65,17 +65,17 @@ TP_7/
   (`ec2:DescribeInstances` non scoping par tag/owner). C'est une limite de la plateforme de labo, pas de
   notre configuration, mais à signaler : dans un contexte réel, une politique IAM scoperait les
   `Describe*` par tag `Owner`.
-- **Constat de sécurité additionnel (2)** : le compte IAM personnel de l'auteure (`user5`) est membre
-  d'un groupe `FormationAdmins` accordant `AdministratorAccess`, vérifié via
+- **Constat de sécurité additionnel (2)** : le compte IAM généré par le formateur pour l'auteure
+  (`user5`) est membre d'un groupe `FormationAdmins` accordant `AdministratorAccess`, vérifié via
   `aws iam list-groups-for-user --user-name user5` (CloudShell) — l'appartenance n'a pas été demandée et
   le groupe a été créé le jour même de l'ouverture du labo (2026-08-17), ce qui suggère une appartenance
   par défaut appliquée à tous les comptes étudiants plutôt qu'un opt-in individuel. Ceci contredit
   directement le principe de moindre privilège appliqué au job Jenkins (voir point ci-dessus) et
   constitue vraisemblablement une erreur de configuration de la plateforme partagée.
   **Vérification et décision** : `jenkins-lab-al` (le compte technique utilisé par Jenkins, distinct du
-  compte personnel) a été confirmé hors de tout groupe IAM — son scope reste limité à ses seuls droits
-  vérifiés (lecture EC2 + gestion Security Groups). Le droit `AdministratorAccess` hérité sur le compte
-  personnel n'a été utilisé à aucun moment de ce TP.
+  compte `user5`) a été confirmé hors de tout groupe IAM — son scope reste limité à ses seuls droits
+  vérifiés (lecture EC2 + gestion Security Groups). Le droit `AdministratorAccess` hérité sur `user5`
+  n'a été utilisé à aucun moment de ce TP.
 
 ## ⚙️ 4. Automatisation
 
