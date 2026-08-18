@@ -65,7 +65,7 @@ TP_7/
   (`ec2:DescribeInstances` non scoping par tag/owner). C'est une limite de la plateforme de labo, pas de
   notre configuration, mais à signaler : dans un contexte réel, une politique IAM scoperait les
   `Describe*` par tag `Owner`.
-- **Constat de sécurité additionnel (2)** : un groupe IAM `Formation Admins` est rejoignable en
+- **Constat de sécurité additionnel (2)** : un groupe IAM `FormationAdmins` est rejoignable en
   self-service par n'importe quel étudiant du compte de labo partagé — plusieurs camarades s'y sont
   ajoutés. Ceci contredit directement le principe de moindre privilège appliqué au job Jenkins (voir
   point ci-dessus) et constitue vraisemblablement une erreur de configuration de la plateforme partagée.
