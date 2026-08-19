@@ -32,7 +32,7 @@ pipeline {
 
         stage('Préparer Ansible (collection community.docker)') {
             steps {
-                sh 'ansible-galaxy collection install community.docker -p "$ANSIBLE_COLLECTIONS_PATH"'
+                sh 'ansible-galaxy collection install community.docker -p "$ANSIBLE_COLLECTIONS_PATH" --force'
             }
         }
 
