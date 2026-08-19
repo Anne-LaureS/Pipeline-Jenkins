@@ -106,13 +106,13 @@ aws --profile jenkins-lab --region eu-west-3 ec2 terminate-instances \
 *`projet-groupe-provision` #4 — checkout, provisionnement (ou réutilisation) de l'instance
 `al-glpi-app`.*
 
-![Assistant d'installation GLPI accessible sur http://13.39.51.200:8080](image.png)
-*Preuve d'accès réel à l'application déployée par le pipeline — écran d'installation GLPI.*
-
 ![Stage View du job projet-groupe-deploy-app, toutes les étapes réussies](image-1.png)
 *`projet-groupe-deploy-app` #8 — checkout, validation des paramètres, préparation Ansible,
 récupération de l'IP de la machine app, lint, approbation manuelle, déploiement réel
 (`GLPI_VERSION=9.1.2`), enregistrement pour rollback.*
+
+![Assistant d'installation GLPI accessible sur http://13.39.51.200:8080](image.png)
+*Preuve d'accès réel à l'application déployée par le pipeline — écran d'installation GLPI.*
 
 ![Stage View du job projet-groupe-rollback, toutes les étapes réussies](image-2.png)
 *`projet-groupe-rollback` #2 — retour vers `GLPI_VERSION=9.1.4` via le même mécanisme que le
