@@ -12,7 +12,7 @@ INSTANCE_NAME="${PREFIX}-jenkins-agent-tp4"
 KEY_NAME="${PREFIX}-jenkins-agent-key"
 SG_NAME="${PREFIX}-jenkins-agent-sg"
 INSTANCE_TYPE="t3.micro"
-CONTROLLER_IP="13.36.171.149"
+CONTROLLER_IP="13.38.60.241"
 
 AWS="aws --profile ${PROFILE} --region ${REGION}"
 
