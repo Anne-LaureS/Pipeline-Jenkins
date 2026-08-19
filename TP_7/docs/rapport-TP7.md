@@ -115,6 +115,10 @@ TP_7/
 *`tp7-deploiement` #4 — lint, vérification `--check --diff`, approbation manuelle, création de
 ressource, configuration Ansible, enregistrement pour rollback.*
 
+![Stage View du job tp7-deploiement, échec attendu sur un CHANGE_REFERENCE vide](image-6.png)
+*`tp7-deploiement` #11 — build rejeté dès la validation des paramètres (`CHANGE_REFERENCE`
+manquant), avant même le lint : aucune étape AWS ou Ansible n'est atteinte.*
+
 ![Stage View du job tp7-nettoyage, échec attendu sur un SG_ID invalide](image-5.png)
 *`tp7-nettoyage` #3 — `SG_ID=invalide` rejeté dès la validation des paramètres (`Error signal:
 SG_ID invalide ou manquant`), avant tout appel AWS : le garde-fou de format fonctionne réellement.*
