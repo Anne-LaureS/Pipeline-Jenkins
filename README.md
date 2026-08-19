@@ -60,6 +60,6 @@ contrôleur) via l'AWS CLI.
 
 Les ressources AWS éphémères créées pendant les TP (Security Groups de test notamment) sont supprimées
 en fin de chaque pipeline concerné. `al-jenkins-tp` et `al-jenkins-agent-tp4` restent actives pour la
-durée du cours. `al-glpi-app` (TP Bonus, optionnelle) peut être terminée dès maintenant, la capacité de
-déploiement/rollback ayant déjà été démontrée (`aws ec2 terminate-instances`, voir
-`TP_Bonus/docs/rapport-tp-bonus.md`).
+durée du cours. `al-glpi-app` (TP Bonus) peut être terminée dès maintenant
+(`aws ec2 terminate-instances`) — le déploiement et le rollback ont déjà été menés à bout, voir
+`TP_Bonus/docs/rapport-tp-bonus.md`.
