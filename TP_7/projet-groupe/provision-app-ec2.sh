@@ -6,7 +6,6 @@
 
 set -euo pipefail
 
-PROFILE="jenkins-lab"
 REGION="eu-west-3"
 PREFIX="al"
 INSTANCE_NAME="${PREFIX}-glpi-app"
@@ -15,13 +14,15 @@ SG_NAME="${PREFIX}-glpi-app-sg"
 INSTANCE_TYPE="t3.small"
 CONTROLLER_IP="${CONTROLLER_IP:?Variable CONTROLLER_IP requise}"
 
-AWS="aws --profile ${PROFILE} --region ${REGION}"
+# Sur l'agent Jenkins, les identifiants arrivent via AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY
+# (withCredentials), pas via un profil nommé — donc pas de --profile ici.
+AWS="aws --region ${REGION}"
 
 echo "==> Vérification des credentials AWS"
 $AWS sts get-caller-identity
 
 echo "==> Récupération de mon IP publique"
-MY_IP="$(curl -s https://checkip.amazonaws.com)/32"
+MY_IP="$(curl -s --max-time 10 https://checkip.amazonaws.com)/32"
 echo "    IP détectée : ${MY_IP}"
 
 echo "==> Recherche de la dernière AMI Ubuntu 24.04 LTS"
