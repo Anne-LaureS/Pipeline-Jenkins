@@ -84,9 +84,9 @@ TP_7/
 
 ## ⚙️ 4. Automatisation
 
-- **Playbook idempotent** (`playbooks/site.yml`) : validé par double exécution réelle consécutive
-  (`changed=1` puis `changed=0`, cf. TP5) et testé en mode `--check --diff` avant toute exécution réelle
-  dans `tp7-deploiement`.
+- **Playbook idempotent** (`playbooks/site.yml`) : testé en mode `--check --diff` avant toute exécution
+  réelle dans `tp7-deploiement`, et validé directement sur TP7 par un run répété sur cible déjà
+  configurée (`ok=4, changed=0` sur les deux étapes Ansible — voir section 5, "Preuve d'idempotence").
 - **Contrôles intégrés** : `ansible-lint` (0 échec), validation des paramètres obligatoires
   (`CHANGE_REFERENCE`), approbation manuelle conditionnelle (`ENVIRONMENT != dev`), validation de format
   sur `SG_ID` dans le job de nettoyage (regex `sg-[0-9a-f]+`).
@@ -117,6 +117,55 @@ ressource, configuration Ansible, enregistrement pour rollback.*
 
 ![Stage View du job tp7-nettoyage, toutes les étapes réussies](image-2.png)
 *`tp7-nettoyage` #4 — validation des paramètres, vérification avant suppression, suppression.*
+
+### 🔁 Preuve d'idempotence (directe, sur TP7)
+
+`tp7-deploiement` #9, relancé avec les mêmes paramètres sur une cible déjà configurée par un run
+précédent — les deux étapes Ansible (`--check --diff` **et** exécution réelle) confirment qu'aucune
+tâche ne modifie l'hôte :
+
+```
+TASK [Gathering Facts] *********************************************************
+ok: [web01]
+TASK [Installer curl] **********************************************************
+ok: [web01]
+TASK [Créer le répertoire de preuve] *******************************************
+ok: [web01]
+TASK [Déposer le fichier de preuve] ********************************************
+ok: [web01]
+
+PLAY RECAP *********************************************************************
+web01    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
+`ok=4, changed=0` sur les deux étapes : le playbook constate que l'état désiré est déjà atteint,
+sans rien modifier — c'est la définition même de l'idempotence, vérifiée en conditions réelles
+(hôte réellement joint en SSH, pas une simulation).
+
+![Stage View du job tp7-deploiement #10, run d'idempotence, toutes les étapes réussies](image-3.png)
+*`tp7-deploiement` #10 — nouveau run identique, toutes les étapes passent en quelques secondes.*
+
+### ↩️ Preuve de retour en arrière (rollback), de bout en bout
+
+1. `tp7-deploiement` #9 crée et tague un Security Group, puis enregistre l'artefact
+   `deployed-resources.json` :
+   ```json
+   {
+     "build_number": "9",
+     "environment": "dev",
+     "change_reference": "idempotence-test-2",
+     "security_group_id": "sg-0d37ba42331a9b17f",
+     "vpc_id": "vpc-04c76f12d2bc944a2",
+     "deployed_at_utc": "2026-08-19T11:46:26Z",
+     "rollback_command": "aws ec2 delete-security-group --group-id sg-0d37ba42331a9b17f"
+   }
+   ```
+2. `tp7-nettoyage` est relancé avec `SG_ID=sg-0d37ba42331a9b17f` (lu directement dans l'artefact
+   ci-dessus, sans avoir à deviner ou reconstruire l'information) et `CHANGE_REFERENCE=idempotence-test-2` :
+
+![Stage View du job tp7-nettoyage #5, toutes les étapes réussies](image-4.png)
+*`tp7-nettoyage` #5 — le Security Group `sg-0d37ba42331a9b17f` créé par le déploiement #9 est
+supprimé avec succès, bouclant la chaîne déploiement → artefact → retour en arrière.*
 
 **Incident rencontré et corrigé** : la première exécution de `tp7-deploiement` a échoué sur les étapes
 Ansible (`playbook not found`) — chemins relatifs erronés dans le Jenkinsfile (oubli du préfixe `TP_7/`
