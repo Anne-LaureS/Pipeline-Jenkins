@@ -29,7 +29,8 @@ pipeline {
         stage('Vérification avant suppression') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh '''
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
                         echo "Ressource ciblee pour suppression (ticket $CHANGE_REFERENCE) :"
                         aws ec2 describe-security-groups --group-ids "$SG_ID" --output json | tee sg-before-deletion.json
                     '''

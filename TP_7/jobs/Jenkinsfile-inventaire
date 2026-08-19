@@ -14,7 +14,10 @@ pipeline {
         stage('Identité et contexte') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh 'aws sts get-caller-identity | tee identity.json'
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+                        aws sts get-caller-identity | tee identity.json
+                    '''
                 }
             }
         }
@@ -22,7 +25,8 @@ pipeline {
         stage('Inventaire EC2') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh '''
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
                         aws ec2 describe-instances \
                             --query "Reservations[].Instances[].{Id:InstanceId,State:State.Name,Type:InstanceType,Tags:Tags}" \
                             --output json | tee ec2-inventory.json
@@ -34,7 +38,8 @@ pipeline {
         stage('Inventaire Security Groups (tag Course)') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh '''
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
                         aws ec2 describe-security-groups \
                             --filters "Name=tag:Course,Values=TP-Jenkins-AWS" \
                             --query "SecurityGroups[].{Id:GroupId,Name:GroupName,VpcId:VpcId,Tags:Tags}" \

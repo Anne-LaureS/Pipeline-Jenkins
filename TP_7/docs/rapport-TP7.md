@@ -1,5 +1,10 @@
 # Rapport de mise en œuvre — TP7 : Projet global Jenkins et Ansible
 
+> 📌 Ce rapport répond également à la consigne du **TP de groupe**, redéfinie par le formateur pour
+> reprendre le même périmètre (catalogue de jobs AWS/Ansible traçable, protégé par un contrôle de
+> droits, avec rollback). Le livrable initial du TP de groupe (application web + base de données) est
+> conservé à part, en bonus, dans `TP_Bonus/`.
+
 ## 🏗️ 1. Architecture
 
 ```
