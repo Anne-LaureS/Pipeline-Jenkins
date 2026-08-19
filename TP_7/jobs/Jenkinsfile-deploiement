@@ -62,7 +62,16 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     script {
                         env.VPC_ID = sh(
-                            script: 'aws ec2 describe-vpcs --filters "Name=tag:Training,Values=true" --query "Vpcs[0].VpcId" --output text',
+                            script: '''#!/usr/bin/env bash
+                                set -euo pipefail
+                                VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Training,Values=true" --query "Vpcs[0].VpcId" --output text)
+                                if [ -z "$VPC_ID" ] || [ "$VPC_ID" = "None" ]; then
+                                    # Pas (ou plus) de VPC taggé Training=true sur ce compte de labo partagé
+                                    # -> repli sur le VPC par défaut.
+                                    VPC_ID=$(aws ec2 describe-vpcs --filters "Name=isDefault,Values=true" --query "Vpcs[0].VpcId" --output text)
+                                fi
+                                echo "$VPC_ID"
+                            ''',
                             returnStdout: true
                         ).trim()
                         env.SG_ID = sh(
