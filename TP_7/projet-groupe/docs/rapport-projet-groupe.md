@@ -1,0 +1,87 @@
+# Rapport — Projet de groupe TP7 : application web + base de données
+
+## 🎯 Contexte (consigne du formateur)
+
+> Mettre en place une application web, connectée à une base de données, via une chaîne de
+> production, pouvoir déployer une nouvelle machine et version, et pouvoir faire un retour
+> en arrière.
+
+Ce livrable est **distinct** du TP7 individuel (`TP_7/jobs`, `TP_7/playbooks`, déjà documenté dans
+`TP_7/docs/rapport-TP7.md`) — il vit à côté, dans `TP_7/projet-groupe/`, sans le modifier.
+
+## 🏗️ Architecture
+
+```
+                    Jenkins (contrôleur, réutilisé depuis TP1)
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                      ▼
+  Jenkinsfile-provision  Jenkinsfile-deploy-app  Jenkinsfile-rollback
+        │                     │                      │
+        ▼                     └──────────┬───────────┘
+  provision-app-ec2.sh                   ▼
+        │                    Ansible (playbooks/deploy-app.yml)
+        ▼                                │
+  Nouvelle instance EC2                  ▼
+  (al-glpi-app, t3.small)   Docker Compose : GLPI (app) + MySQL (db)
+```
+
+- **Application** : [GLPI](https://glpi-project.org/) (gestion de parc IT/helpdesk, PHP), image Docker
+  `diouxx/glpi`, tag = version déployée
+- **Base de données** : MySQL 8.0, conteneur dédié, volume Docker persistant
+- **Nouvelle machine** : chaque environnement applicatif tourne sur sa propre instance EC2
+  (`al-glpi-app`), distincte de `web_lab` (réutilisée pour le TP7 individuel)
+
+## 📚 Catalogue de jobs
+
+| Job | Rôle | Paramètres | Idempotent ? |
+|---|---|---|---|
+| `Jenkinsfile-provision` | Crée l'instance EC2 dédiée à l'app (ou la réutilise si déjà présente) | aucun | Oui — relançable sans dupliquer la ressource |
+| `Jenkinsfile-deploy-app` | Déploie/met à jour GLPI + MySQL via Ansible, à la version demandée | `GLPI_VERSION`, `CHANGE_REFERENCE` | Oui — `docker compose up` ne recrée que ce qui a changé |
+| `Jenkinsfile-rollback` | Redéploie une version antérieure de GLPI | `TARGET_VERSION`, `CHANGE_REFERENCE` | Oui — réutilise le même mécanisme que le déploiement |
+
+**Retour en arrière** : chaque déploiement archive un artefact `deployed-version.json`
+(version, référence de changement, horodatage). Pour revenir en arrière, on relance
+`Jenkinsfile-rollback` avec `TARGET_VERSION` = la version lue dans le dernier
+`deployed-version.json` connu comme fonctionnel.
+
+**Nouvelle machine** : `Jenkinsfile-provision` est un job séparé et idempotent — il ne fait
+qu'une seule chose (garantir que la machine cible existe), sans dupliquer les ressources
+AWS à chaque exécution. `Jenkinsfile-deploy-app`/`Jenkinsfile-rollback` retrouvent l'IP de
+cette machine par eux-mêmes via l'API AWS (tag `Name=al-glpi-app`), sans dépendre d'un
+fichier partagé entre jobs.
+
+## 🔐 Sécurité
+
+- **Secrets externalisés** : `GLPI_DB_ROOT_PASSWORD` et `GLPI_DB_PASSWORD` ne sont jamais en dur
+  — stockés comme credentials Jenkins (`glpi-db-root-password`, `glpi-db-password`, type "Secret
+  text"), injectés via un fichier `.env` généré à la volée sur la machine cible (mode `0600`,
+  jamais commité, `no_log: true` sur la tâche Ansible correspondante).
+- **Réseau restreint** : le Security Group de l'app (`al-glpi-app-sg`) n'autorise que le SSH (22)
+  depuis l'IP du contrôleur Jenkins, et le port applicatif (8080) uniquement depuis l'IP de
+  l'opérateur — jamais `0.0.0.0/0`, cohérent avec la pratique déjà appliquée en TP6.
+- **Utilisateur dédié** : la machine app utilise le même compte `automation` (non-root, clé SSH
+  dédiée) déjà utilisé pour `web_lab` — pas de nouvelle paire de clés à gérer.
+- **Approbation manuelle obligatoire** avant tout déploiement ou rollback réel.
+
+## ⚙️ Prérequis Jenkins (credentials à créer avant le premier run)
+
+| Credential ID | Type | Contenu |
+|---|---|---|
+| `aws-jenkins-lab` | Username with password | déjà existant (réutilisé) |
+| `ssh-ansible-web-lab` | SSH Username with private key | déjà existant (réutilisé) |
+| `glpi-db-root-password` | Secret text | mot de passe root MySQL (à générer, ex: `openssl rand -base64 24`) |
+| `glpi-db-password` | Secret text | mot de passe de l'utilisateur applicatif `glpi` (à générer) |
+
+## 🧹 Nettoyage
+
+Pour supprimer l'instance app en fin de projet :
+```bash
+aws --profile jenkins-lab --region eu-west-3 ec2 terminate-instances \
+  --instance-ids <ID de al-glpi-app>
+```
+
+## ✅ Preuves d'exécution
+
+*(à compléter après les premiers runs réels : captures des jobs, logs archivés, accès à
+l'application via `http://<IP app>:8080`)*

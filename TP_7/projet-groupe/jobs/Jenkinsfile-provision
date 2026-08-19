@@ -1,0 +1,33 @@
+pipeline {
+    agent { label 'aws-lab' }
+
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '15'))
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = 'eu-west-3'
+        CONTROLLER_IP = '13.38.60.241'
+    }
+
+    stages {
+        stage('Provisionner (ou réutiliser) la machine app') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        chmod +x TP_7/projet-groupe/provision-app-ec2.sh
+                        TP_7/projet-groupe/provision-app-ec2.sh
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'TP_7/projet-groupe/inventory/hosts.ini', fingerprint: true, allowEmptyArchive: true
+            echo "Provisioning ${env.BUILD_NUMBER} terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}

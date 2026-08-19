@@ -1,0 +1,107 @@
+pipeline {
+    agent { label 'aws-lab' }
+
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '15'))
+    }
+
+    parameters {
+        string(name: 'GLPI_VERSION', defaultValue: '10.0.15', description: 'Tag de l\'image Docker GLPI à déployer')
+        string(name: 'CHANGE_REFERENCE', defaultValue: '', description: 'Identifiant du ticket / demande de changement (obligatoire)')
+    }
+
+    stages {
+        stage('Validation des paramètres') {
+            steps {
+                script {
+                    if (!params.CHANGE_REFERENCE?.trim()) {
+                        error('CHANGE_REFERENCE est obligatoire pour tout déploiement.')
+                    }
+                }
+                echo "Déploiement demandé : GLPI_VERSION=${params.GLPI_VERSION} | CHANGE_REFERENCE=${params.CHANGE_REFERENCE}"
+            }
+        }
+
+        stage('Préparer Ansible (collection community.docker)') {
+            steps {
+                sh 'ansible-galaxy collection install community.docker'
+            }
+        }
+
+        stage('Récupérer l\'IP de la machine app') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        APP_IP=$(aws --region eu-west-3 ec2 describe-instances \
+                            --filters "Name=tag:Name,Values=al-glpi-app" "Name=instance-state-name,Values=running" \
+                            --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+                        if [ -z "$APP_IP" ] || [ "$APP_IP" = "None" ]; then
+                            echo "Aucune instance al-glpi-app running trouvee. Lancer d'abord le job de provisioning."
+                            exit 1
+                        fi
+                        mkdir -p TP_7/projet-groupe/inventory
+                        printf "[glpi_app]\\napp01 ansible_host=%s ansible_user=automation\\n" "$APP_IP" > TP_7/projet-groupe/inventory/hosts.ini
+                        echo "IP de la machine app : $APP_IP"
+                    '''
+                }
+            }
+        }
+
+        stage('Lint du playbook') {
+            steps {
+                sh '/home/jenkins-agent/.local/bin/ansible-lint TP_7/projet-groupe/playbooks/deploy-app.yml | tee ansible-lint-output.txt'
+            }
+        }
+
+        stage('Approbation manuelle') {
+            steps {
+                input message: "Confirmer le déploiement de GLPI ${params.GLPI_VERSION} pour ${params.CHANGE_REFERENCE} ?", ok: 'Déployer'
+            }
+        }
+
+        stage('Déploiement (Ansible - exécution réelle)') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'ssh-ansible-web-lab', keyFileVariable: 'ANSIBLE_KEY'),
+                    string(credentialsId: 'glpi-db-root-password', variable: 'GLPI_DB_ROOT_PASSWORD'),
+                    string(credentialsId: 'glpi-db-password', variable: 'GLPI_DB_PASSWORD')
+                ]) {
+                    sh '''
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
+                            -i TP_7/projet-groupe/inventory/hosts.ini \
+                            TP_7/projet-groupe/playbooks/deploy-app.yml \
+                            --private-key="$ANSIBLE_KEY" \
+                            -e "glpi_version=$GLPI_VERSION" \
+                            -e "glpi_db_root_password=$GLPI_DB_ROOT_PASSWORD" \
+                            -e "glpi_db_password=$GLPI_DB_PASSWORD" \
+                            | tee ansible-deploy-output.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Enregistrement pour rollback') {
+            steps {
+                sh '''
+                    cat > deployed-version.json <<EOF
+{
+  "build_number": "$BUILD_NUMBER",
+  "glpi_version": "$GLPI_VERSION",
+  "change_reference": "$CHANGE_REFERENCE",
+  "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+                    cat deployed-version.json
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'ansible-lint-output.txt, ansible-deploy-output.txt, deployed-version.json', fingerprint: true, allowEmptyArchive: true
+            echo "Déploiement ${env.BUILD_NUMBER} (GLPI ${params.GLPI_VERSION}) terminé avec le statut : ${currentBuild.currentResult}"
+        }
+    }
+}

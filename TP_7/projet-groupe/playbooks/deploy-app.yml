@@ -1,0 +1,65 @@
+---
+- name: Déployer l'application GLPI + MySQL (projet de groupe TP7)
+  hosts: glpi_app
+  become: true
+  vars:
+    glpi_version: "{{ glpi_version | default('10.0.15') }}"
+    app_dir: /opt/glpi-app
+
+  tasks:
+    - name: Installer les prérequis (Docker)
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+        state: present
+        update_cache: true
+
+    - name: Démarrer et activer Docker
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Ajouter automation au groupe docker
+      ansible.builtin.user:
+        name: automation
+        groups: docker
+        append: true
+
+    - name: Créer le répertoire de l'application
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Déployer le fichier .env (secrets, jamais dans le docker-compose.yml)
+      ansible.builtin.template:
+        src: env.j2
+        dest: "{{ app_dir }}/.env"
+        mode: '0600'
+      no_log: true
+
+    - name: Déployer le docker-compose.yml (version = {{ glpi_version }})
+      ansible.builtin.template:
+        src: docker-compose.yml.j2
+        dest: "{{ app_dir }}/docker-compose.yml"
+        mode: '0644'
+      register: compose_file
+
+    - name: Lancer/mettre à jour la stack (docker compose up -d)
+      community.docker.docker_compose_v2:
+        project_src: "{{ app_dir }}"
+        pull: "always"
+        state: present
+      register: compose_result
+
+    - name: Enregistrer la version déployée (pour rollback)
+      ansible.builtin.copy:
+        dest: "{{ app_dir }}/DEPLOYED_VERSION"
+        content: "{{ glpi_version }}\n"
+        mode: '0644'
+
+    - name: Afficher le résultat
+      ansible.builtin.debug:
+        msg: "GLPI {{ glpi_version }} déployé (changed={{ compose_result.changed }})"

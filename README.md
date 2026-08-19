@@ -16,7 +16,7 @@ code, sa fiche de configuration (preuves d'exécution + captures) et, pour le TP
 
 | Rôle | Instance | Détails |
 |---|---|---|
-| 🎛️ Contrôleur Jenkins | `al-jenkins-tp` (13.36.171.149) | Provisionné au TP1, sert aussi de cible Ansible `web_lab` (TP5/TP7) |
+| 🎛️ Contrôleur Jenkins | `al-jenkins-tp` (13.38.60.241) | Provisionné au TP1, sert aussi de cible Ansible `web_lab` (TP5/TP7) |
 | 🤖 Agent Jenkins | `al-jenkins-agent-tp4` (label `aws-lab`) | Provisionné au TP4 — Git, Java, AWS CLI, Python, Ansible |
 
 ☁️ Les deux tournent sur le compte AWS de labo partagé (fourni par le formateur, IAM restreint), région `eu-west-3`.
@@ -43,6 +43,7 @@ contrôleur) via l'AWS CLI.
 | 5️⃣ [TP5](TP_5/) | Playbook Ansible idempotent, lint + check/diff + approbation manuelle | [fiche-configuration-TP5.md](TP_5/fiche-configuration-TP5.md) |
 | 6️⃣ [TP6](TP_6/) | AWS CLI et gestion réseau (Security Group taggé, règle restreinte) | [fiche-configuration-TP6.md](TP_6/fiche-configuration-TP6.md) |
 | 7️⃣ [TP7](TP_7/) | Projet global : catalogue de 3 jobs (inventaire/déploiement/nettoyage) | [rapport-TP7.md](TP_7/docs/rapport-TP7.md) |
+| 👥 [Projet de groupe](TP_7/projet-groupe/) | App web (GLPI) + MySQL, nouvelle machine à chaque déploiement, rollback de version | [rapport-projet-groupe.md](TP_7/projet-groupe/docs/rapport-projet-groupe.md) |
 
 ## 🔐 Principes appliqués sur l'ensemble du dépôt
 
