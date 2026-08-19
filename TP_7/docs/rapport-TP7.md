@@ -103,6 +103,16 @@ TP_7/
 | `tp7-nettoyage` (`SG_ID` invalide) | FAILURE attendue — garde-fou de format |
 | `tp7-nettoyage` (ID valide, x2) | SUCCESS — ressources supprimées, aucune ressource orpheline restante |
 
+![Stage View du job tp7-inventaire, toutes les étapes réussies](image.png)
+*`tp7-inventaire` #1 — checkout, identité AWS, inventaire EC2, inventaire Security Groups.*
+
+![Stage View du job tp7-deploiement, toutes les étapes réussies y compris l'approbation manuelle](image-1.png)
+*`tp7-deploiement` #4 — lint, vérification `--check --diff`, approbation manuelle, création de
+ressource, configuration Ansible, enregistrement pour rollback.*
+
+![Stage View du job tp7-nettoyage, toutes les étapes réussies](image-2.png)
+*`tp7-nettoyage` #4 — validation des paramètres, vérification avant suppression, suppression.*
+
 **Incident rencontré et corrigé** : la première exécution de `tp7-deploiement` a échoué sur les étapes
 Ansible (`playbook not found`) — chemins relatifs erronés dans le Jenkinsfile (oubli du préfixe `TP_7/`
 après le checkout SCM du dépôt complet). Corrigé en un commit, ressource orpheline nettoyée manuellement,
