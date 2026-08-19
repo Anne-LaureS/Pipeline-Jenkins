@@ -102,6 +102,10 @@ aws --profile jenkins-lab --region eu-west-3 ec2 terminate-instances \
 - Collection Ansible `community.docker` invisible d'`ansible-lint` (environnements Python isolés)
 - Tag d'image `10.0.15` inexistant sur `diouxx/glpi` (tags réels : `9.1.x`, `latest`)
 
+![Stage View du job projet-groupe-provision, toutes les étapes réussies](image-3.png)
+*`projet-groupe-provision` #4 — checkout, provisionnement (ou réutilisation) de l'instance
+`al-glpi-app`.*
+
 ![Assistant d'installation GLPI accessible sur http://13.39.51.200:8080](image.png)
 *Preuve d'accès réel à l'application déployée par le pipeline — écran d'installation GLPI.*
 
