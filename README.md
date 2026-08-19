@@ -18,6 +18,7 @@ code, sa fiche de configuration (preuves d'exécution + captures) et, pour le TP
 |---|---|---|
 | 🎛️ Contrôleur Jenkins | `al-jenkins-tp` (13.38.60.241) | Provisionné au TP1, sert aussi de cible Ansible `web_lab` (TP5/TP7) |
 | 🤖 Agent Jenkins | `al-jenkins-agent-tp4` (label `aws-lab`) | Provisionné au TP4 — Git, Java, AWS CLI, Python, Ansible |
+| 🎁 App bonus (GLPI) | `al-glpi-app` | Provisionnée par `TP_Bonus/jobs/Jenkinsfile-provision` — à terminer après la soutenance, non nécessaire à la notation du TP7 |
 
 ☁️ Les deux tournent sur le compte AWS de labo partagé (fourni par le formateur, IAM restreint), région `eu-west-3`.
 
@@ -58,5 +59,6 @@ contrôleur) via l'AWS CLI.
 ## 🧹 Nettoyage
 
 Les ressources AWS éphémères créées pendant les TP (Security Groups de test notamment) sont supprimées
-en fin de chaque pipeline concerné. Seules les deux instances EC2 listées ci-dessus restent actives, pour
-la durée du cours.
+en fin de chaque pipeline concerné. Les trois instances EC2 listées ci-dessus restent actives pour la
+durée du cours ; `al-glpi-app` (TP Bonus, optionnelle) sera terminée après la soutenance
+(`aws ec2 terminate-instances`, voir `TP_Bonus/docs/rapport-tp-bonus.md`).
