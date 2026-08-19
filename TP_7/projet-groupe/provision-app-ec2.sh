@@ -12,7 +12,6 @@ INSTANCE_NAME="${PREFIX}-glpi-app"
 KEY_NAME="${PREFIX}-jenkins-agent-key"
 SG_NAME="${PREFIX}-glpi-app-sg"
 INSTANCE_TYPE="t3.small"
-CONTROLLER_IP="${CONTROLLER_IP:?Variable CONTROLLER_IP requise}"
 # IP de la personne qui doit accéder à l'appli (port 8080) dans son navigateur —
 # ne PAS auto-détecter ici : ce script tourne sur l'agent Jenkins, dont l'IP n'a
 # aucun rapport avec celle de l'opérateur humain.
@@ -26,6 +25,16 @@ echo "==> Vérification des credentials AWS"
 $AWS sts get-caller-identity
 
 echo "==> IP opérateur fournie : ${OPERATOR_IP}/32"
+
+echo "==> Récupération de l'IP de l'agent Jenkins (c'est lui qui exécutera ansible-playbook, pas le contrôleur)"
+AGENT_IP=$($AWS ec2 describe-instances \
+  --filters "Name=tag:Name,Values=al-jenkins-agent-tp4" "Name=instance-state-name,Values=running" \
+  --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+if [ -z "${AGENT_IP}" ] || [ "${AGENT_IP}" == "None" ]; then
+  echo "Impossible de trouver l'agent al-jenkins-agent-tp4 en cours d'execution." >&2
+  exit 1
+fi
+echo "    IP agent : ${AGENT_IP}"
 
 echo "==> Recherche de la dernière AMI Ubuntu 24.04 LTS"
 AMI_ID=$($AWS ec2 describe-images \
@@ -49,16 +58,31 @@ if [ "${SG_ID}" == "None" ] || [ -z "${SG_ID}" ]; then
     --vpc-id "${VPC_ID}" \
     --query "GroupId" --output text)
   echo "    Security group créé : ${SG_ID}"
-
-  # SSH depuis le contrôleur (Ansible) uniquement, HTTP GLPI depuis mon IP uniquement
-  $AWS ec2 authorize-security-group-ingress \
-    --group-id "${SG_ID}" --protocol tcp --port 22 --cidr "${CONTROLLER_IP}/32" >/dev/null
-  $AWS ec2 authorize-security-group-ingress \
-    --group-id "${SG_ID}" --protocol tcp --port 8080 --cidr "${OPERATOR_IP}/32" >/dev/null
-  echo "    Règles ajoutées : SSH(22) depuis ${CONTROLLER_IP}/32, HTTP(8080) depuis ${OPERATOR_IP}/32"
 else
   echo "    Security group ${SG_NAME} déjà existant (${SG_ID})."
 fi
+
+# Réconciliation des règles à CHAQUE run (pas seulement à la création) : l'IP de
+# l'agent Jenkins et celle de l'opérateur changent à chaque redémarrage de leurs
+# instances respectives (pas d'Elastic IP sur ce labo). On retire tout ce qui
+# n'est pas l'IP courante sur ces 2 ports, puis on autorise l'IP courante.
+for RULE in "22:$AGENT_IP" "8080:$OPERATOR_IP"; do
+  PORT="${RULE%%:*}"
+  IP="${RULE##*:}"
+  OLD_CIDRS=$($AWS ec2 describe-security-groups --group-ids "${SG_ID}" \
+    --query "SecurityGroups[0].IpPermissions[?FromPort==\`${PORT}\`].IpRanges[].CidrIp" --output text)
+  for OLD_CIDR in ${OLD_CIDRS}; do
+    if [ "${OLD_CIDR}" != "${IP}/32" ]; then
+      echo "    Retrait de l'ancienne règle port ${PORT} : ${OLD_CIDR}"
+      $AWS ec2 revoke-security-group-ingress \
+        --group-id "${SG_ID}" --protocol tcp --port "${PORT}" --cidr "${OLD_CIDR}" >/dev/null
+    fi
+  done
+  $AWS ec2 authorize-security-group-ingress \
+    --group-id "${SG_ID}" --protocol tcp --port "${PORT}" --cidr "${IP}/32" >/dev/null 2>&1 \
+    || true
+  echo "    Règle port ${PORT} à jour : ${IP}/32"
+done
 
 echo "==> Lancement (ou réutilisation) de l'instance : ${INSTANCE_NAME}"
 EXISTING=$($AWS ec2 describe-instances \

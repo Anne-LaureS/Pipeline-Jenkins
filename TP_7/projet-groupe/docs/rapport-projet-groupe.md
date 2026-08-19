@@ -58,8 +58,12 @@ fichier partagé entre jobs.
   text"), injectés via un fichier `.env` généré à la volée sur la machine cible (mode `0600`,
   jamais commité, `no_log: true` sur la tâche Ansible correspondante).
 - **Réseau restreint** : le Security Group de l'app (`al-glpi-app-sg`) n'autorise que le SSH (22)
-  depuis l'IP du contrôleur Jenkins, et le port applicatif (8080) uniquement depuis l'IP de
-  l'opérateur — jamais `0.0.0.0/0`, cohérent avec la pratique déjà appliquée en TP6.
+  depuis l'IP de l'**agent Jenkins** (c'est lui qui exécute `ansible-playbook`, pas le contrôleur),
+  et le port applicatif (8080) uniquement depuis l'IP de l'opérateur (paramètre `OPERATOR_IP` du
+  job `Jenkinsfile-provision`) — jamais `0.0.0.0/0`, cohérent avec la pratique déjà appliquée en
+  TP6. `provision-app-ec2.sh` réconcilie ces 2 règles à **chaque exécution** (retire l'ancienne
+  IP, autorise la courante) — relancer `Jenkinsfile-provision` avec l'`OPERATOR_IP` du jour suffit
+  après un redémarrage de l'agent ou un changement de connexion réseau.
 - **Utilisateur dédié** : la machine app utilise le même compte `automation` (non-root, clé SSH
   dédiée) déjà utilisé pour `web_lab` — pas de nouvelle paire de clés à gérer.
 - **Approbation manuelle obligatoire** avant tout déploiement ou rollback réel.

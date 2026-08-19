@@ -12,7 +12,6 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION = 'eu-west-3'
-        CONTROLLER_IP = '13.38.60.241'
     }
 
     stages {
