@@ -43,7 +43,7 @@ contrôleur) via l'AWS CLI.
 | 5️⃣ [TP5](TP_5/) | Playbook Ansible idempotent, lint + check/diff + approbation manuelle | [fiche-configuration-TP5.md](TP_5/fiche-configuration-TP5.md) |
 | 6️⃣ [TP6](TP_6/) | AWS CLI et gestion réseau (Security Group taggé, règle restreinte) | [fiche-configuration-TP6.md](TP_6/fiche-configuration-TP6.md) |
 | 7️⃣ [TP7](TP_7/) | Projet global : catalogue de 3 jobs (inventaire/déploiement/nettoyage) | [rapport-TP7.md](TP_7/docs/rapport-TP7.md) |
-| 👥 [Projet de groupe](TP_7/projet-groupe/) | App web (GLPI) + MySQL, nouvelle machine à chaque déploiement, rollback de version | [rapport-projet-groupe.md](TP_7/projet-groupe/docs/rapport-projet-groupe.md) |
+| 🎁 [TP Bonus](TP_Bonus/) | App web (GLPI) + MySQL, nouvelle machine à chaque déploiement, rollback de version | [rapport-tp-bonus.md](TP_Bonus/docs/rapport-tp-bonus.md) |
 
 ## 🔐 Principes appliqués sur l'ensemble du dépôt
 

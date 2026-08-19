@@ -12,7 +12,7 @@ pipeline {
     }
 
     environment {
-        ANSIBLE_COLLECTIONS_PATH = "${WORKSPACE}/TP_7/projet-groupe/collections"
+        ANSIBLE_COLLECTIONS_PATH = "${WORKSPACE}/TP_Bonus/collections"
     }
 
     stages {
@@ -48,8 +48,8 @@ pipeline {
                             echo "Aucune instance al-glpi-app running trouvee."
                             exit 1
                         fi
-                        mkdir -p TP_7/projet-groupe/inventory
-                        printf "[glpi_app]\\napp01 ansible_host=%s ansible_user=automation\\n" "$APP_IP" > TP_7/projet-groupe/inventory/hosts.ini
+                        mkdir -p TP_Bonus/inventory
+                        printf "[glpi_app]\\napp01 ansible_host=%s ansible_user=automation\\n" "$APP_IP" > TP_Bonus/inventory/hosts.ini
                         echo "IP de la machine app : $APP_IP"
                     '''
                 }
@@ -72,8 +72,8 @@ pipeline {
                     sh '''#!/usr/bin/env bash
                         set -euo pipefail
                         ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
-                            -i TP_7/projet-groupe/inventory/hosts.ini \
-                            TP_7/projet-groupe/playbooks/deploy-app.yml \
+                            -i TP_Bonus/inventory/hosts.ini \
+                            TP_Bonus/playbooks/deploy-app.yml \
                             --private-key="$ANSIBLE_KEY" \
                             -e "glpi_version=$TARGET_VERSION" \
                             -e "glpi_db_root_password=$GLPI_DB_ROOT_PASSWORD" \

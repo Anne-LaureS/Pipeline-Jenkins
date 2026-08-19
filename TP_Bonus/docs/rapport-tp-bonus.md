@@ -1,13 +1,15 @@
-# Rapport — Projet de groupe TP7 : application web + base de données
+# Rapport — TP Bonus : application web + base de données
 
-## 🎯 Contexte (consigne du formateur)
+## 🎯 Contexte (consigne initiale du formateur pour le TP de groupe, remplacée depuis)
 
 > Mettre en place une application web, connectée à une base de données, via une chaîne de
 > production, pouvoir déployer une nouvelle machine et version, et pouvoir faire un retour
 > en arrière.
 
-Ce livrable est **distinct** du TP7 individuel (`TP_7/jobs`, `TP_7/playbooks`, déjà documenté dans
-`TP_7/docs/rapport-TP7.md`) — il vit à côté, dans `TP_7/projet-groupe/`, sans le modifier.
+Le formateur a depuis redéfini le TP de groupe (voir `TP_7/docs/rapport-TP7.md`, dont le contenu
+existant répond déjà à la nouvelle consigne). Ce livrable est conservé à part, en **bonus**, dans
+`TP_Bonus/` — fonctionnel et testé (déploiement + rollback validés en conditions réelles), mais
+non requis pour la notation du TP de groupe.
 
 ## 🏗️ Architecture
 
@@ -87,5 +89,17 @@ aws --profile jenkins-lab --region eu-west-3 ec2 terminate-instances \
 
 ## ✅ Preuves d'exécution
 
-*(à compléter après les premiers runs réels : captures des jobs, logs archivés, accès à
-l'application via `http://<IP app>:8080`)*
+| Test | Résultat |
+|---|---|
+| `projet-groupe-provision` | SUCCESS — instance `al-glpi-app` créée (t3.small), Security Group dédié |
+| `projet-groupe-deploy-app` (`GLPI_VERSION=9.1.2`) | SUCCESS — Docker installé, GLPI+MySQL déployés, app accessible en HTTP 200 |
+| `projet-groupe-rollback` (`TARGET_VERSION=9.1.4`) | SUCCESS — redéploiement de la version antérieure via le même playbook |
+
+**Incidents rencontrés et corrigés en conditions réelles** (détail dans l'historique git) :
+- `| tee` masquant l'échec réel d'`ansible-playbook` (Jenkins rapportait un faux succès)
+- IP opérateur/agent mal identifiées dans les règles de Security Group (auto-détection depuis
+  le mauvais hôte)
+- Collection Ansible `community.docker` invisible d'`ansible-lint` (environnements Python isolés)
+- Tag d'image `10.0.15` inexistant sur `diouxx/glpi` (tags réels : `9.1.x`, `latest`)
+
+*(captures d'écran des jobs à ajouter si besoin pour la démonstration)*

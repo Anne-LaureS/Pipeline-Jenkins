@@ -31,8 +31,8 @@ pipeline {
                     sh '''#!/usr/bin/env bash
                         set -euo pipefail
                         export OPERATOR_IP="${OPERATOR_IP}"
-                        chmod +x TP_7/projet-groupe/provision-app-ec2.sh
-                        TP_7/projet-groupe/provision-app-ec2.sh
+                        chmod +x TP_Bonus/provision-app-ec2.sh
+                        TP_Bonus/provision-app-ec2.sh
                     '''
                 }
             }
@@ -41,7 +41,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'TP_7/projet-groupe/inventory/hosts.ini', fingerprint: true, allowEmptyArchive: true
+            archiveArtifacts artifacts: 'TP_Bonus/inventory/hosts.ini', fingerprint: true, allowEmptyArchive: true
             echo "Provisioning ${env.BUILD_NUMBER} terminé avec le statut : ${currentBuild.currentResult}"
         }
     }
