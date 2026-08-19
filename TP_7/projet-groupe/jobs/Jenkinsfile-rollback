@@ -11,6 +11,10 @@ pipeline {
         string(name: 'CHANGE_REFERENCE', defaultValue: '', description: 'Identifiant du ticket / demande de changement (obligatoire)')
     }
 
+    environment {
+        ANSIBLE_COLLECTIONS_PATH = "${WORKSPACE}/TP_7/projet-groupe/collections"
+    }
+
     stages {
         stage('Validation des paramètres') {
             steps {
@@ -23,6 +27,12 @@ pipeline {
                     }
                 }
                 echo "Rollback demandé vers GLPI_VERSION=${params.TARGET_VERSION} | CHANGE_REFERENCE=${params.CHANGE_REFERENCE}"
+            }
+        }
+
+        stage('Préparer Ansible (collection community.docker)') {
+            steps {
+                sh 'ansible-galaxy collection install community.docker -p "$ANSIBLE_COLLECTIONS_PATH"'
             }
         }
 

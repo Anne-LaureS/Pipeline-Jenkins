@@ -11,6 +11,12 @@ pipeline {
         string(name: 'CHANGE_REFERENCE', defaultValue: '', description: 'Identifiant du ticket / demande de changement (obligatoire)')
     }
 
+    environment {
+        // Chemin explicite et partagé, pour qu'ansible-lint (venv isolé) et
+        // ansible-playbook voient la même collection installée.
+        ANSIBLE_COLLECTIONS_PATH = "${WORKSPACE}/TP_7/projet-groupe/collections"
+    }
+
     stages {
         stage('Validation des paramètres') {
             steps {
@@ -25,7 +31,7 @@ pipeline {
 
         stage('Préparer Ansible (collection community.docker)') {
             steps {
-                sh 'ansible-galaxy collection install community.docker'
+                sh 'ansible-galaxy collection install community.docker -p "$ANSIBLE_COLLECTIONS_PATH"'
             }
         }
 
