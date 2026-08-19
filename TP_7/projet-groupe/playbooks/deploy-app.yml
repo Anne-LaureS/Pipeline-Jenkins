@@ -3,7 +3,7 @@
   hosts: glpi_app
   become: true
   vars:
-    glpi_version: "{{ glpi_version | default('10.0.15') }}"
+    glpi_version: "{{ glpi_version | default('9.1.4') }}"
     app_dir: /opt/glpi-app
 
   tasks:
