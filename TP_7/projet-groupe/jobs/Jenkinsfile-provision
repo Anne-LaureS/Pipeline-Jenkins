@@ -6,16 +6,32 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '15'))
     }
 
+    parameters {
+        string(name: 'OPERATOR_IP', defaultValue: '', description: 'Ton IP publique actuelle (https://checkip.amazonaws.com) — pour accéder à GLPI:8080 depuis ton navigateur. Obligatoire.')
+    }
+
     environment {
         AWS_DEFAULT_REGION = 'eu-west-3'
         CONTROLLER_IP = '13.38.60.241'
     }
 
     stages {
+        stage('Validation des paramètres') {
+            steps {
+                script {
+                    if (!params.OPERATOR_IP?.trim()) {
+                        error('OPERATOR_IP est obligatoire (ton IP publique, sans /32).')
+                    }
+                }
+            }
+        }
+
         stage('Provisionner (ou réutiliser) la machine app') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh '''
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+                        export OPERATOR_IP="${OPERATOR_IP}"
                         chmod +x TP_7/projet-groupe/provision-app-ec2.sh
                         TP_7/projet-groupe/provision-app-ec2.sh
                     '''

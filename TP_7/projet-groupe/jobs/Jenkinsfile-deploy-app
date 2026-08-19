@@ -32,7 +32,8 @@ pipeline {
         stage('Récupérer l\'IP de la machine app') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-lab', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh '''
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
                         APP_IP=$(aws --region eu-west-3 ec2 describe-instances \
                             --filters "Name=tag:Name,Values=al-glpi-app" "Name=instance-state-name,Values=running" \
                             --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
@@ -50,7 +51,10 @@ pipeline {
 
         stage('Lint du playbook') {
             steps {
-                sh '/home/jenkins-agent/.local/bin/ansible-lint TP_7/projet-groupe/playbooks/deploy-app.yml | tee ansible-lint-output.txt'
+                sh '''#!/usr/bin/env bash
+                    set -euo pipefail
+                    /home/jenkins-agent/.local/bin/ansible-lint TP_7/projet-groupe/playbooks/deploy-app.yml | tee ansible-lint-output.txt
+                '''
             }
         }
 
@@ -67,7 +71,8 @@ pipeline {
                     string(credentialsId: 'glpi-db-root-password', variable: 'GLPI_DB_ROOT_PASSWORD'),
                     string(credentialsId: 'glpi-db-password', variable: 'GLPI_DB_PASSWORD')
                 ]) {
-                    sh '''
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
                         ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
                             -i TP_7/projet-groupe/inventory/hosts.ini \
                             TP_7/projet-groupe/playbooks/deploy-app.yml \

@@ -13,6 +13,10 @@ KEY_NAME="${PREFIX}-jenkins-agent-key"
 SG_NAME="${PREFIX}-glpi-app-sg"
 INSTANCE_TYPE="t3.small"
 CONTROLLER_IP="${CONTROLLER_IP:?Variable CONTROLLER_IP requise}"
+# IP de la personne qui doit accéder à l'appli (port 8080) dans son navigateur —
+# ne PAS auto-détecter ici : ce script tourne sur l'agent Jenkins, dont l'IP n'a
+# aucun rapport avec celle de l'opérateur humain.
+OPERATOR_IP="${OPERATOR_IP:?Variable OPERATOR_IP requise (IP publique operateur, sans /32)}"
 
 # Sur l'agent Jenkins, les identifiants arrivent via AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY
 # (withCredentials), pas via un profil nommé — donc pas de --profile ici.
@@ -21,9 +25,7 @@ AWS="aws --region ${REGION}"
 echo "==> Vérification des credentials AWS"
 $AWS sts get-caller-identity
 
-echo "==> Récupération de mon IP publique"
-MY_IP="$(curl -s --max-time 10 https://checkip.amazonaws.com)/32"
-echo "    IP détectée : ${MY_IP}"
+echo "==> IP opérateur fournie : ${OPERATOR_IP}/32"
 
 echo "==> Recherche de la dernière AMI Ubuntu 24.04 LTS"
 AMI_ID=$($AWS ec2 describe-images \
@@ -52,8 +54,8 @@ if [ "${SG_ID}" == "None" ] || [ -z "${SG_ID}" ]; then
   $AWS ec2 authorize-security-group-ingress \
     --group-id "${SG_ID}" --protocol tcp --port 22 --cidr "${CONTROLLER_IP}/32" >/dev/null
   $AWS ec2 authorize-security-group-ingress \
-    --group-id "${SG_ID}" --protocol tcp --port 8080 --cidr "${MY_IP}" >/dev/null
-  echo "    Règles ajoutées : SSH(22) depuis ${CONTROLLER_IP}/32, HTTP(8080) depuis ${MY_IP}"
+    --group-id "${SG_ID}" --protocol tcp --port 8080 --cidr "${OPERATOR_IP}/32" >/dev/null
+  echo "    Règles ajoutées : SSH(22) depuis ${CONTROLLER_IP}/32, HTTP(8080) depuis ${OPERATOR_IP}/32"
 else
   echo "    Security group ${SG_NAME} déjà existant (${SG_ID})."
 fi
