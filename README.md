@@ -20,7 +20,12 @@ code, sa fiche de configuration (preuves d'exécution + captures) et, pour le TP
 | 🤖 Agent Jenkins | `al-jenkins-agent-tp4` (label `aws-lab`) | Provisionné au TP4 — Git, Java, AWS CLI, Python, Ansible |
 | 🎁 App bonus (GLPI) | `al-glpi-app` | Provisionnée par `TP_Bonus/jobs/Jenkinsfile-provision` — capacité de déploiement/rollback déjà démontrée (voir rapport) |
 
-☁️ Les deux tournent sur le compte AWS de labo partagé (fourni par le formateur, IAM restreint), région `eu-west-3`.
+<p align="center">
+  <img src="infra-reuse.svg" alt="Le contrôleur créé au TP1 et l'agent créé au TP4 sont réutilisés sans interruption jusqu'au TP7 et au TP Bonus ; seule l'app bonus GLPI a nécessité une troisième instance dédiée." width="100%" />
+</p>
+<p align="center"><i>2 instances EC2 portent 7 TP — seul le bonus (optionnel) a nécessité d'en créer une 3ᵉ, dédiée.</i></p>
+
+☁️ Les trois tournent sur le compte AWS de labo partagé (fourni par le formateur, IAM restreint), région `eu-west-3`.
 
 ⚠️ **Pas d'Elastic IP** : après un arrêt/redémarrage (stop/start) de l'instance `al-jenkins-tp`, l'IP
 publique change. Mettre à jour `TP_4/deploy-jenkins-agent-ec2.sh`, `TP_5/inventory.ini` et
