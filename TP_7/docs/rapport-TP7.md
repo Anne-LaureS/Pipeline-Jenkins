@@ -16,7 +16,8 @@ Développeur (Anne-Laure)
         ▼
 Jenkins (contrôleur, TP1) ── job Jenkins ──► Agent aws-lab (TP4)
         │                                          │
-        │                                          ├─ AWS CLI (jenkins-lab-al)
+        │                                          ├─ AWS CLI (identité IAM jenkins-lab-al,
+        │                                             via credential Jenkins aws-jenkins-lab)
         │                                          └─ Ansible (clé automation)
         ▼                                          │
   3 jobs du catalogue :                             ▼
