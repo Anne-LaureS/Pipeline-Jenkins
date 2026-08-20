@@ -25,6 +25,13 @@ Jenkins (contrôleur, TP1) ── job Jenkins ──► Agent aws-lab (TP4)
   - tp7-nettoyage        (suppression)
 ```
 
+<figure>
+  <img src="architecture-jobs.svg" alt="Les 3 jobs du catalogue partagent le même agent Jenkins mais n'utilisent chacun que le credential dont ils ont besoin : tp7-inventaire et tp7-nettoyage n'utilisent que le credential AWS CLI aws-jenkins-lab, seul tp7-deploiement combine AWS CLI et Ansible (credential ssh-ansible-web-lab)." width="100%" />
+  <figcaption><i>Détail par job de quel credential touche quelle ressource — la séparation des responsabilités
+  décrite en section 3 (sécurité) rendue visible : deux jobs sur trois n'utilisent qu'un seul credential,
+  jamais les deux par facilité.</i></figcaption>
+</figure>
+
 Le dépôt est structuré comme demandé par le cahier (8.3) :
 
 ```
