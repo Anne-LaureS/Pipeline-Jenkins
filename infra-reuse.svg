@@ -14,58 +14,58 @@
   <rect x="0" y="0" width="1100" height="330" fill="#ffffff"/>
 
   <!-- TP column labels -->
-  <text x="130" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#1e293b">TP1</text>
-  <text x="245" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b">TP2</text>
-  <text x="360" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b">TP3</text>
-  <text x="475" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#1e293b">TP4</text>
-  <text x="590" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b">TP5</text>
-  <text x="705" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b">TP6</text>
-  <text x="820" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b">TP7</text>
-  <text x="935" y="20" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#1e293b">TP Bonus</text>
-  <line x1="20" y1="30" x2="980" y2="30" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="130" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#1e293b">TP1</text>
+  <text x="245" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#64748b">TP2</text>
+  <text x="360" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#64748b">TP3</text>
+  <text x="475" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#1e293b">TP4</text>
+  <text x="590" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#64748b">TP5</text>
+  <text x="705" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#64748b">TP6</text>
+  <text x="820" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#64748b">TP7</text>
+  <text x="935" y="20" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#1e293b">TP Bonus</text>
+  <line x1="20" y1="32" x2="980" y2="32" stroke="#cbd5e1" stroke-width="1"/>
 
   <!-- Row labels -->
-  <text x="20" y="72" font-family="sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">Contrôleur</text>
-  <text x="20" y="87" font-family="sans-serif" font-size="10" fill="#475569">al-jenkins-tp</text>
+  <text x="20" y="72" font-family="sans-serif" font-size="14" font-weight="700" fill="#1e3a8a">Contrôleur</text>
+  <text x="20" y="88" font-family="sans-serif" font-size="12.5" fill="#475569">al-jenkins-tp</text>
 
-  <text x="20" y="152" font-family="sans-serif" font-size="12" font-weight="700" fill="#14532d">Agent</text>
-  <text x="20" y="167" font-family="sans-serif" font-size="10" fill="#475569">al-jenkins-agent-tp4</text>
+  <text x="20" y="152" font-family="sans-serif" font-size="14" font-weight="700" fill="#14532d">Agent</text>
+  <text x="20" y="168" font-family="sans-serif" font-size="12.5" fill="#475569">al-jenkins-agent-tp4</text>
 
-  <text x="20" y="242" font-family="sans-serif" font-size="12" font-weight="700" fill="#7c2d12">App bonus</text>
-  <text x="20" y="257" font-family="sans-serif" font-size="10" fill="#475569">al-glpi-app</text>
+  <text x="20" y="242" font-family="sans-serif" font-size="14" font-weight="700" fill="#7c2d12">App bonus</text>
+  <text x="20" y="258" font-family="sans-serif" font-size="12.5" fill="#475569">al-glpi-app</text>
 
   <!-- Row A: Contrôleur (created TP1, ongoing) -->
   <path d="M130,63 L975,63" fill="none" stroke="#1d4ed8" stroke-width="6" stroke-linecap="round" marker-end="url(#arrowB)"/>
   <circle cx="130" cy="63" r="5" fill="#1d4ed8"/>
-  <text x="130" y="45" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1e3a8a">créé ici</text>
+  <text x="130" y="45" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#1e3a8a">créé ici</text>
 
   <circle cx="590" cy="63" r="4" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
-  <rect x="533" y="98" width="114" height="16" fill="#ffffff" opacity="0.92"/>
-  <text x="590" y="110" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1e3a8a">+ cible Ansible web_lab</text>
+  <rect x="510" y="97" width="160" height="20" fill="#ffffff" opacity="0.92"/>
+  <text x="590" y="112" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#1e3a8a">+ cible Ansible web_lab</text>
 
   <circle cx="820" cy="63" r="4" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
-  <rect x="770" y="98" width="100" height="16" fill="#ffffff" opacity="0.92"/>
-  <text x="820" y="110" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1e3a8a">+ web01 (catalogue jobs)</text>
+  <rect x="750" y="97" width="140" height="20" fill="#ffffff" opacity="0.92"/>
+  <text x="820" y="112" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#1e3a8a">+ web01 (catalogue jobs)</text>
 
   <!-- Row B: Agent (created TP4, ongoing) -->
   <path d="M475,143 L975,143" fill="none" stroke="#15803d" stroke-width="6" stroke-linecap="round" marker-end="url(#arrowG)"/>
   <circle cx="475" cy="143" r="5" fill="#15803d"/>
-  <text x="475" y="125" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#14532d">créé ici</text>
+  <text x="475" y="125" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#14532d">créé ici</text>
 
   <circle cx="590" cy="143" r="4" fill="#ffffff" stroke="#15803d" stroke-width="2"/>
-  <rect x="545" y="178" width="90" height="16" fill="#ffffff" opacity="0.92"/>
-  <text x="590" y="190" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#14532d">exécute Ansible</text>
+  <rect x="524" y="177" width="132" height="20" fill="#ffffff" opacity="0.92"/>
+  <text x="590" y="192" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#14532d">exécute Ansible</text>
 
   <circle cx="877" cy="143" r="4" fill="#ffffff" stroke="#15803d" stroke-width="2"/>
-  <rect x="792" y="178" width="170" height="16" fill="#ffffff" opacity="0.92"/>
-  <text x="877" y="190" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#14532d">exécute les jobs (TP7 + TP Bonus)</text>
+  <rect x="757" y="177" width="240" height="20" fill="#ffffff" opacity="0.92"/>
+  <text x="877" y="192" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#14532d">exécute les jobs (TP7 + TP Bonus)</text>
 
   <!-- Row C: App bonus (created only at TP_Bonus, dedicated) -->
   <path d="M935,233 L975,233" fill="none" stroke="#c2410c" stroke-width="6" stroke-linecap="round" marker-end="url(#arrowA)"/>
   <circle cx="935" cy="233" r="5" fill="#c2410c"/>
-  <rect x="700" y="266" width="380" height="16" fill="#ffffff" opacity="0.92"/>
-  <text x="890" y="278" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#7c2d12">créée ici, dédiée au Bonus — pas partagée avec les autres TP</text>
+  <rect x="630" y="265" width="460" height="20" fill="#ffffff" opacity="0.92"/>
+  <text x="860" y="280" text-anchor="middle" font-family="sans-serif" font-size="12.5" fill="#7c2d12">créée ici, dédiée au Bonus — pas partagée avec les autres TP</text>
 
   <!-- caption -->
-  <text x="20" y="315" font-family="sans-serif" font-size="11" fill="#475569">2 instances portent 7 TP — seul le bonus (optionnel) a nécessité d'en créer une 3ᵉ, dédiée.</text>
+  <text x="20" y="315" font-family="sans-serif" font-size="13" fill="#475569">2 instances portent 7 TP — seul le bonus (optionnel) a nécessité d'en créer une 3ᵉ, dédiée.</text>
 </svg>
