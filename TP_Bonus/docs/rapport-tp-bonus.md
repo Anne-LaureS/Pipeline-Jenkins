@@ -95,12 +95,15 @@ aws --profile jenkins-lab --region eu-west-3 ec2 terminate-instances \
 | `projet-groupe-deploy-app` (`GLPI_VERSION=9.1.2`) | SUCCESS — Docker installé, GLPI+MySQL déployés, app accessible en HTTP 200 |
 | `projet-groupe-rollback` (`TARGET_VERSION=9.1.4`) | SUCCESS — redéploiement de la version antérieure via le même playbook |
 
-**Incidents rencontrés et corrigés en conditions réelles** (détail dans l'historique git) :
-- `| tee` masquant l'échec réel d'`ansible-playbook` (Jenkins rapportait un faux succès)
-- IP opérateur/agent mal identifiées dans les règles de Security Group (auto-détection depuis
-  le mauvais hôte)
-- Collection Ansible `community.docker` invisible d'`ansible-lint` (environnements Python isolés)
-- Tag d'image `10.0.15` inexistant sur `diouxx/glpi` (tags réels : `9.1.x`, `latest`)
+**⚠️ Points d'attention si vous réutilisez ce pipeline** (résolus ici, détail dans l'historique git) :
+- Toujours faire suivre `set -euo pipefail` avant un `| tee` dans un `sh` Jenkins — sinon un échec
+  d'`ansible-playbook` peut être masqué et Jenkins rapporte un faux succès
+- Bien identifier quelle IP (agent vs opérateur) va dans quelle règle de Security Group — l'auto-détection
+  doit interroger le bon hôte
+- La collection Ansible `community.docker` doit être installée dans le même chemin que celui utilisé par
+  `ansible-lint` (environnements Python isolés sinon)
+- Vérifier les tags réels disponibles sur `diouxx/glpi` avant de fixer une version (`9.1.x`, `latest` —
+  pas de `10.0.x`)
 
 ![Stage View du job projet-groupe-provision, toutes les étapes réussies](image-3.png)
 *`projet-groupe-provision` #4 — checkout, provisionnement (ou réutilisation) de l'instance

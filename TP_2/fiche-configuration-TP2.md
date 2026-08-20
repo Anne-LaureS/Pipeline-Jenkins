@@ -1,6 +1,6 @@
 # Fiche de configuration — TP2 : Connecter Jenkins à AWS
 
-## ⚠️ Contexte / incident rencontré
+## ⚠️ Contexte / limitation de la plateforme
 
 Le compte AWS du laboratoire est un compte restreint fourni par le formateur (pas AWS Academy) : l'utilisateur `jenkins-lab-al`
 n'a **aucun droit IAM en self-service** (`iam:CreateUser`, `iam:GetUser`, etc. tous refusés — `AccessDenied`).

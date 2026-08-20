@@ -69,8 +69,8 @@ Deux tentatives ont été nécessaires pour bien isoler ce test :
 
 1. **`doDisconnect` (simple coupure de canal)** : la stratégie de rétention SSH "Always" a **automatiquement
    reconnecté l'agent** avant même le déclenchement du build suivant — le build est passé normalement.
-   *(Incident noté : une simple coupure réseau/canal ne suffit pas à simuler un arrêt d'agent avec cette
-   stratégie de rétention.)*
+   *(⚠️ À prendre en compte : avec la stratégie de rétention "Always", une simple coupure réseau/canal ne
+   suffit pas à simuler un arrêt d'agent — utiliser la mise hors ligne persistante ci-dessous à la place.)*
 2. **Mise hors ligne persistante (`toggleOffline`, agent marqué "temporarily offline")** : le build suivant
    reste bloqué en file d'attente avec une raison explicite, sans jamais s'exécuter ailleurs :
 

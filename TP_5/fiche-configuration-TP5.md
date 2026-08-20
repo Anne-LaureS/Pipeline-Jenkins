@@ -8,17 +8,17 @@
 | Cible `web_lab` | Contrôleur Jenkins du TP1 (13.36.171.149) — réutilisé plutôt que de créer une 3e instance |
 | Compte de connexion | `automation` (créé spécifiquement sur le contrôleur, clé SSH dédiée, sudo NOPASSWD) |
 
-## 🚨 Incident rencontré et diagnostic
+## ⚠️ Précaution : mémoire limitée sur l'instance contrôleur
 
-Lors du premier test manuel du playbook, l'instance contrôleur (t3.micro, 1 Go de RAM, **sans swap
-configuré**) a cessé de répondre (SSH timeout dès l'échange de bannière) pendant qu'une tâche
-`ansible apt` était en cours. Diagnostic :
+L'instance contrôleur (t3.micro, 1 Go de RAM, **sans swap configuré**) peut cesser de répondre (SSH
+timeout dès l'échange de bannière) si une tâche Ansible gourmande (ex: `apt`) tourne en même temps qu'une
+autre charge. Repères utiles si ça arrive :
 
-- Les status checks AWS (`SystemStatus`/`InstanceStatus`) restaient `ok` → la VM elle-même n'était pas
-  en panne, seul l'OS était en détresse (probable saturation mémoire, aggravée par l'absence de swap qui
-  aurait permis une dégradation progressive plutôt qu'un blocage brutal).
-- **Correction** : redémarrage de l'instance via `aws ec2 reboot-instances`. Après reboot, Jenkins et SSH
-  répondaient de nouveau normalement, aucun processus résiduel.
+- Les status checks AWS (`SystemStatus`/`InstanceStatus`) restent `ok` dans ce cas → la VM elle-même
+  n'est pas en panne, seul l'OS est en détresse (saturation mémoire, aggravée par l'absence de swap qui
+  permettrait une dégradation progressive plutôt qu'un blocage brutal).
+- **Solution rapide** : redémarrer l'instance via `aws ec2 reboot-instances` — Jenkins et SSH répondent
+  de nouveau normalement après reboot, sans processus résiduel.
 - **Amélioration possible (non appliquée, hors périmètre du TP)** : ajouter un fichier swap sur les
   instances t3.micro du labo pour éviter ce type de blocage.
 
