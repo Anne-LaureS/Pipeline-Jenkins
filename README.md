@@ -61,6 +61,12 @@ contrôleur) via l'AWS CLI.
 - ⚠️ **Limitation connue** : le compte AWS de labo interdit la gestion IAM en self-service — documenté et
   traité au TP2, repris au TP7 (mesure compensatoire : séparation des responsabilités au niveau Jenkins).
 
+## 📌 Suivi des incidents
+
+Les bugs réels rencontrés et corrigés en conditions live (TP7 et TP_Bonus) sont documentés sous forme
+de tickets fermés sur [ce board](https://github.com/users/Anne-LaureS/projects/2) — découverte,
+diagnostic, correction, commit associé.
+
 ## 🧹 Nettoyage
 
 Les ressources AWS éphémères créées pendant les TP (Security Groups de test notamment) sont supprimées
