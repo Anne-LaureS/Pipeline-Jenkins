@@ -1,5 +1,7 @@
 # ☁️ Pipeline Jenkins — TP Amazon AWS : CI/CD et automatisation avec Ansible et Jenkins
 
+[![Licence MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
+
 <p align="center">
 
 ![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
@@ -73,3 +75,10 @@ Les ressources AWS éphémères créées pendant les TP (Security Groups de test
 en fin de chaque pipeline concerné. `al-jenkins-tp` et `al-jenkins-agent-tp4` restent actives pour la
 durée du cours. `al-glpi-app` (TP Bonus) tourne également — déploiement et rollback menés à bout, voir
 `TP_Bonus/docs/rapport-tp-bonus.md`.
+
+---
+
+## 📜 Licence
+
+Publié sous licence [MIT](LICENSE) © 2026 Anne-LaureS : réutilisation libre, à condition de conserver la
+mention de copyright. Fourni « tel quel », sans garantie.
